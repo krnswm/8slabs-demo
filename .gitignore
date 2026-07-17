@@ -1,0 +1,23 @@
+# dependencies
+node_modules
+
+# next.js build output & static export
+.next
+out
+
+# misc
+*.local
+.DS_Store
+.env
+.env.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# --- OneDrive note -----------------------------------------------------------
+# This project lives inside a OneDrive-synced folder. OneDrive syncing .next
+# (a 100MB+ cache that churns on every dev rebuild) makes `next dev` slow and
+# can lock files mid-build. .gitignore does NOT stop OneDrive — to stop it,
+# right-click the .next and node_modules folders -> "Always keep off this
+# device" / "Free up space", or move the project out of OneDrive entirely.
+# See README -> "If the dev server feels slow".

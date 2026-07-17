@@ -1,0 +1,601 @@
+/* =====================================================================
+   8Slabs — Design System
+   ---------------------------------------------------------------------
+   Colour is taken VERBATIM from the client SRS §10. Do not "improve" these
+   hexes — they are the signed-off brand values. Anything not in the SRS is
+   derived from those values with color-mix() so the palette can never drift.
+   ===================================================================== */
+
+:root {
+  /* ---- SRS §10: exact client-specified values ---------------------- */
+  --c-bg:          #F7F5F2;  /* Background    */
+  --c-heading:     #2E2E2E;  /* Headings      */
+  --c-body:        #555555;  /* Body Text     */
+  --c-btn:         #2E2E2E;  /* Primary Button*/
+  --c-btn-hover:   #A67C52;  /* Button Hover  */
+  --c-accent:      #A67C52;  /* Accent        */
+  --c-border:      #D6C7B4;  /* Borders       */
+  --c-footer:      #1F1F1F;  /* Footer        */
+
+  /* ---- Derived: accessibility -------------------------------------
+     The SRS accent #A67C52 measures 3.43:1 on the SRS background. That is
+     fine for borders, fills and large display type, but below the 4.5:1 AA
+     floor for normal text — so the accent is split by job rather than
+     abandoned. Every value below is the SRS hue, moved only as far as
+     compliance requires:
+
+       --c-accent      #A67C52  fills, borders, rules, large display   (SRS, untouched)
+       --c-accent-ink  #836241  accent TEXT under ~24px, and any accent fill
+                                carrying a light label. 5.09:1 on --c-bg,
+                                4.51:1 on --c-sunk (the darker of the two
+                                cream surfaces — checked against the worst case,
+                                not the flattering one).
+       --c-accent-dark #A87F55  accent text on the near-black footer: 4.56:1.
+                                The ink variant is too dark to read there.
+
+     Rule: never put --c-accent on small text, in either direction. */
+  --c-accent-ink:  #836241;
+  --c-accent-dark: #A87F55;
+
+  /* ---- Derived: surfaces ------------------------------------------ */
+  --c-surface:     #FFFFFF;
+  --c-sunk:        color-mix(in srgb, var(--c-border) 22%, var(--c-bg));
+  --c-hairline:    color-mix(in srgb, var(--c-border) 60%, var(--c-bg));
+
+  /* ---- Grain -------------------------------------------------------
+     A flat hex fill is the tell of a cheap page: nothing physical is flat.
+     Paper has tooth, stone has grain, and a surface with no tooth reads as
+     a screen rather than a material. This is fractal noise at ~4% — invisible
+     as texture, but the page stops looking like a colour value.
+
+     Inline SVG data URI, so it costs one tiny string, no network request, and
+     tiles seamlessly (stitchTiles). Deliberately NOT animated. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='0.042'/%3E%3C/svg%3E");
+  --c-on-dark:     #F7F5F2;
+  --c-on-dark-mut: color-mix(in srgb, var(--c-bg) 62%, transparent);
+  /* WhatsApp's own dark green (#075E54) rather than their light green
+     (#25D366). The light green is only ~1.9:1 against a white label — the
+     glyph would fail even the 3:1 UI floor. This is an official WhatsApp
+     brand colour, not a tint we invented, so the button still reads as
+     WhatsApp while clearing 7.67:1. */
+  --c-whatsapp:    #075E54;
+
+  /* ---- Type -------------------------------------------------------
+     Three faces, three jobs. Elegance here comes from the SETTING, not from
+     reaching for a fancier family: display is set large and LIGHT with tight
+     leading, which is what reads as expensive. Bold-and-tight reads as strong;
+     large-and-light reads as considered. */
+  --f-display: var(--font-display), 'Archivo', system-ui, sans-serif;
+  --f-body:    var(--font-body), 'Newsreader', Georgia, serif;
+  --f-mono:    var(--font-mono), ui-monospace, 'SFMono-Regular', monospace;
+
+  --t-xs:  0.75rem;
+  --t-sm:  0.9375rem;
+  --t-base: 1.125rem;                        /* 18px — serif body needs the size */
+  --t-lg:  clamp(1.2rem, 0.4vw + 1.1rem, 1.4rem);
+  --t-xl:  clamp(1.5rem, 1vw + 1.25rem, 2rem);
+  --t-2xl: clamp(2rem, 2.6vw + 1.4rem, 3.5rem);
+  --t-3xl: clamp(2.6rem, 5.4vw + 1rem, 6rem);
+
+  /* ---- Spacing: 4/8 rhythm, spacious (marketing, not dashboard) ---- */
+  --s-1: 0.25rem;  --s-2: 0.5rem;   --s-3: 0.75rem;  --s-4: 1rem;
+  --s-6: 1.5rem;   --s-8: 2rem;     --s-12: 3rem;    --s-16: 4rem;
+  --s-24: 6rem;
+
+  /* Three section scales, not one. A page where every band is the same height
+     has no hierarchy — it reads as a stack of equal blocks no matter how good
+     the contents are. Tight sections make the large ones feel large.
+     Tightened pass 2: the previous values left too much air between bands. */
+  --section-sm: clamp(2.25rem, 3.5vw, 3.25rem);
+  --section:    clamp(3rem, 5.5vw, 5rem);
+  --section-lg: clamp(4rem, 8vw, 7rem);
+
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+  --maxw: 1240px;
+
+  /* Sticky nav height. The full-height heroes subtract this so the first
+     screen is exactly one viewport — hero + nav, no more. Keep in sync with
+     .nav__inner min-height in components.css. */
+  --nav-h: 76px;
+
+  --radius: 2px;      /* stone is cut, not moulded — near-square corners */
+  --radius-lg: 3px;
+
+  /* ---- Elevation -------------------------------------------------- */
+  --e-1: 0 1px 2px rgba(31, 31, 31, 0.06);
+  --e-2: 0 8px 24px rgba(31, 31, 31, 0.10);
+  --e-3: 0 24px 56px rgba(31, 31, 31, 0.16);
+
+  /* ---- Motion ----------------------------------------------------- */
+  /* One rhythm for the whole site. Exits run ~65% of entrances so
+     dismissing anything always feels quicker than summoning it. */
+  --d-fast:  160ms;
+  --d-base:  240ms;
+  --d-slow:  420ms;
+  --d-set:   620ms;   /* the slab-set: slower, because weight is slow */
+  --d-exit:  150ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);   /* entering */
+  --ease-in:  cubic-bezier(0.55, 0, 1, 0.45);   /* exiting  */
+  /* Overshoots its rest position by a hair, then settles. The difference
+     between "an element appeared" and "something heavy was put down". */
+  --ease-set: cubic-bezier(0.16, 1.12, 0.3, 1);
+
+  /* ---- Layers ----------------------------------------------------- */
+  --z-base: 0; --z-raised: 10; --z-sticky: 40; --z-float: 90; --z-modal: 100;
+}
+
+/* ---------------------------------------------------------------- Reset */
+*, *::before, *::after { box-sizing: border-box; }
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  /* NB: no global `scroll-behavior: smooth`. With it on, Next's scroll-to-top
+     on every route change animates as a slow slide, which reads as "the page
+     is loading slowly" when it has in fact already arrived. Smooth scrolling
+     is scoped to same-page hash links only (see :target / .smooth-anchor). */
+  scroll-padding-top: calc(var(--nav-h) + var(--s-4));  /* hash links clear the sticky nav */
+}
+
+body {
+  font-family: var(--f-body);
+  font-size: var(--t-base);
+  line-height: 1.62;
+  color: var(--c-body);
+  background-color: var(--c-bg);
+  background-image: var(--grain);
+  font-variation-settings: 'opsz' 16;   /* body optical size, not display shrunk */
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;              /* belt-and-braces against horizontal scroll */
+}
+
+img, svg, video { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+ul, ol { list-style: none; padding: 0; }
+:where(input, select, textarea) { font: inherit; }
+
+/* Visible focus everywhere. Never remove without replacing. */
+:focus-visible {
+  outline: 2px solid var(--c-accent-ink);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+::selection { background: var(--c-accent); color: #fff; }
+
+/* ---------------------------------------------------------- Typography */
+h1, h2, h3, h4 {
+  font-family: var(--f-display);
+  color: var(--c-heading);
+  font-weight: 500;                      /* not 600 — weight is not hierarchy here, scale is */
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-variation-settings: 'wdth' 110;   /* expanded — slab proportions */
+  text-wrap: balance;
+}
+
+/* The one place the type is allowed to be loud. Light, huge, tight. */
+h1 {
+  font-size: var(--t-3xl);
+  font-weight: 400;
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+}
+h2 { font-size: var(--t-2xl); line-height: 0.98; }
+h3 { font-size: var(--t-xl); font-weight: 500; font-variation-settings: 'wdth' 104; letter-spacing: -0.02em; }
+h4 { font-size: var(--t-lg); font-variation-settings: 'wdth' 100; }
+
+p { max-width: 66ch; }            /* 60–75 char measure */
+
+/* The mono utility face. Used for anything that is technical data:
+   quarry origins, thicknesses, finishes, dates, counts. */
+.mono {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-body);
+  font-weight: 500;
+}
+
+.eyebrow {
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-accent-ink);      /* AA-safe accent — small text */
+  display: block;
+  margin-bottom: var(--s-4);
+}
+
+.lead {
+  font-size: var(--t-lg);
+  line-height: 1.6;
+  color: var(--c-body);
+}
+
+/* ------------------------------------------------------------- Layout */
+.container { width: 100%; max-width: var(--maxw); margin-inline: auto; padding-inline: var(--gutter); }
+
+.section { padding-block: var(--section); }
+.section--lg { padding-block: var(--section-lg); }
+.section--sm { padding-block: var(--section-sm); }
+
+/* Sections are separated by a drawn line, not by alternating background
+   blocks. Alternating cream/greige bands is the cheapest possible way to say
+   "new section" and it flattens the page into stripes. A hairline is what a
+   drawing does — it marks the boundary and then gets out of the way. */
+.section--rule { border-top: 1px solid var(--c-hairline); }
+
+.section--sunk { background-color: var(--c-sunk); background-image: var(--grain); }
+
+/* The one tonal break on the page. Stone is the only saturated thing in the
+   palette, and against near-black it finally reads as material rather than
+   swatch. Used exactly once — a second dark band would make it wallpaper. */
+.section--dark {
+  background-color: var(--c-footer);
+  background-image: var(--grain);
+  color: var(--c-on-dark-mut);
+}
+.section--dark h1, .section--dark h2, .section--dark h3 { color: var(--c-on-dark); }
+.section--dark .eyebrow { color: var(--c-accent-dark); }
+
+.narrow { max-width: 62ch; }
+.center { text-align: center; }
+.stack > * + * { margin-top: var(--s-4); }
+
+.grid { display: grid; gap: var(--s-6); }
+.grid--2 { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
+.grid--3 { grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr)); }
+.grid--4 { grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); }
+
+.sec-head { max-width: 60ch; margin-bottom: var(--s-8); }
+.sec-head.center { margin-inline: auto; }
+.sec-head p { margin-top: var(--s-3); }
+
+.on-dark { color: var(--c-on-dark-mut); }
+.on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: var(--c-on-dark); }
+
+/* ------------------------------------------------------------ Buttons */
+/* Base sets its own box; variants only ever set colour. Keeps variants from
+   fighting the base on padding/size (a classic specificity collision). */
+/* Buttons fill by WIPE, not by cross-fade. A background-color transition is
+   the default everywhere; a fill that travels from the left edge is a decision.
+   The wipe is a ::before on a scaleX transform — compositor-only, so it costs
+   nothing and cannot trigger layout. */
+.btn {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  min-height: 48px;                       /* touch target */
+  padding: var(--s-3) var(--s-6);
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: var(--radius);
+  cursor: pointer;
+  touch-action: manipulation;             /* kills the 300ms tap delay */
+  transition:
+    color var(--d-base) var(--ease-out),
+    border-color var(--d-base) var(--ease-out),
+    transform var(--d-fast) var(--ease-out);
+}
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform var(--d-slow) var(--ease-out);
+}
+.btn:hover::before, .btn:focus-visible::before { transform: scaleX(1); }
+.btn:active { transform: translateY(1px); }   /* press feedback, no layout shift */
+
+.btn--primary { background: var(--c-btn); color: var(--c-bg); }
+/* SRS specifies #A67C52 on hover. As a FILL carrying a light label it needs
+   the AA-safe variant, so the wipe uses --c-accent-ink (same hue). */
+.btn--primary::before { background: var(--c-accent-ink); }
+
+.btn--ghost { border: 1px solid var(--c-border); color: var(--c-heading); }
+.btn--ghost::before { background: var(--c-heading); }
+.btn--ghost:hover, .btn--ghost:focus-visible { color: var(--c-bg); border-color: var(--c-heading); }
+
+.btn--wa { background: var(--c-whatsapp); color: #fff; }
+.btn--wa::before { background: color-mix(in srgb, var(--c-whatsapp) 78%, #000); }
+
+.btn--light { background: var(--c-bg); color: var(--c-heading); }
+.btn--light::before { background: var(--c-accent-ink); }
+.btn--light:hover, .btn--light:focus-visible { color: var(--c-bg); }
+
+/* --------------------------------------------------------------- Link */
+.link-u {
+  color: var(--c-accent-ink);
+  font-weight: 600;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-size: 0% 1px;
+  background-position: 0 100%;
+  background-repeat: no-repeat;
+  transition: background-size var(--d-base) var(--ease-out);
+}
+.link-u:hover { background-size: 100% 1px; }
+
+/* -------------------------------------------------------------- Cards
+   Equal height, always. The grid item (the Reveal wrapper) stretches to the
+   tallest in its row; height:100% makes the card fill that stretched item, so
+   cards in a row line up regardless of how much text each holds. The whole
+   card is a flex column so the face stays put and the body absorbs the slack. */
+.grid > * { min-width: 0; }        /* let items shrink instead of overflowing */
+.card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition:
+    border-color var(--d-base) var(--ease-out),
+    box-shadow var(--d-slow) var(--ease-out),
+    transform var(--d-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .card:hover { transform: translateY(-3px); box-shadow: var(--e-2); border-color: var(--c-accent); }
+
+  /* Lean in. The stone face creeps toward you over 1.2s — far slower than a
+     UI transition, because this is not feedback, it is the material inviting
+     a closer look. Fast would feel like a button; slow feels like stone. */
+  .card .stone-tex { transition: transform 1200ms var(--ease-out); }
+  .card:hover .stone-tex { transform: scale(1.055); }
+}
+
+.tag {
+  display: inline-block;
+  font-family: var(--f-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  color: var(--c-body);
+}
+
+/* ============================================================ MOTION ==
+   Everything below animates transform/opacity only — never width, height,
+   top or left — so nothing here can trigger layout or shift the page (CLS).
+   ===================================================================== */
+
+/* ---- The site has ONE gesture -------------------------------------
+   Everything arrives the way a slab is set into a rack: lowered onto its
+   bottom edge, with a slight settle at the end. Not a fade-up — a fade-up is
+   the default every generated site ships, and it says nothing about stone.
+   The overshoot in --ease-set is what makes it read as weight rather than
+   opacity: the element passes its resting position by a hair and comes back,
+   the way something heavy does.
+
+   Transform and opacity only. Never clip-path here — these wrappers contain
+   cards whose hover shadows fall outside the border box, and a clip would
+   shear them off. */
+.reveal {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0) scaleY(0.992);
+  transform-origin: bottom center;
+  transition:
+    opacity var(--d-slow) var(--ease-out),
+    transform var(--d-set) var(--ease-set);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.reveal[data-shown='true'] { opacity: 1; transform: none; }
+
+/* The exception: the h1 is cut, not set. A single saw pass, once per visit,
+   on the one element that has no shadow to shear. This is the site's loudest
+   motion and it happens exactly once. */
+.cut {
+  clip-path: inset(0 0 100% 0);
+  animation: cut-pass 900ms var(--ease-out) 120ms both;
+}
+@keyframes cut-pass {
+  from { clip-path: inset(0 0 100% 0); }
+  to   { clip-path: inset(0 0 -12% 0); }   /* ends past the box: nothing stays clipped */
+}
+
+/* Route transition: a quick fade, opacity only.
+   This used to be a 420ms fade + 8px rise. On a client-side route change the
+   new page has already arrived instantly, so any entrance animation is pure
+   perceived latency — the longer and the more it moves, the slower navigation
+   feels. Cut to a short opacity-only fade: enough to soften the swap, not
+   enough to make the user wait for content that is already there. No transform,
+   so it also can't fight the per-element reveals underneath it. */
+@keyframes page-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.page-in { animation: page-in 180ms var(--ease-out) both; }
+
+/* ======================================================= THE RACK =====
+   The signature. 8Slabs, made literal: eight slabs standing on edge in a
+   yard rack, which is how slabs are actually stored — never stacked flat.
+   Hovering pulls one forward, the way a buyer pulls a slab out to read the
+   face before committing to a container.
+
+   Desktop: eight vertical panels (the rack).
+   Mobile:  the same eight, reflowed to horizontal bands (the strata), each
+            tall enough to be a legal touch target. Not a hack — both are
+            true readings of stone, and 8 vertical panels at 375px would be
+            40px wide, under the 44px minimum.
+   ===================================================================== */
+.rack {
+  display: flex;
+  gap: 4px;
+  /* Tall on purpose — full slabs read as premium, and it is the taller of the
+     two hero columns so its height sets the hero's height. Tied to svh (max
+     700px) so it fills most of one screen without ever forcing a scroll:
+     72svh still leaves room for the nav and the hero's own padding. */
+  height: clamp(440px, 72svh, 700px);
+  padding: var(--s-3);
+  background: var(--c-sunk);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  perspective: 1400px;
+}
+
+.rack__slab {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  transform-origin: bottom center;
+  transition:
+    transform var(--d-slow) var(--ease-out),
+    flex-grow var(--d-slow) var(--ease-out),
+    box-shadow var(--d-slow) var(--ease-out);
+  /* Entrance: each slab is set into the rack in turn. */
+  animation: slab-set var(--d-slow) var(--ease-out) both;
+  animation-delay: var(--slab-delay, 0ms);
+}
+
+@keyframes slab-set {
+  from { opacity: 0; transform: translate3d(0, 14%, 0) scaleY(0.94); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* ---- Scroll-linked depth (progressive enhancement) -----------------
+   Each slab's FACE drifts at a slightly different rate as the rack passes
+   through the viewport, so the eight read as objects at different distances
+   rather than eight flat rectangles. --slab-i is signed and centred (-3.5 to
+   +3.5), so the middle of the rack sits still and the outer slabs drift in
+   opposite directions — the row breathes from its centre instead of sliding
+   as one block. The faces are pre-scaled 1.06 so drift never exposes an edge.
+
+   Runs entirely on the compositor via animation-timeline: no scroll listener,
+   no JS, nothing on the main thread. Browsers without scroll-driven
+   animations simply get a still rack, which is a perfectly good rack —
+   nothing is conditional on it. The animation is on __face, not __slab,
+   so it cannot collide with the slab-set entrance above. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .rack__face {
+      animation: face-drift linear both;
+      animation-timeline: view();
+      animation-range: entry 0% exit 100%;
+    }
+    @keyframes face-drift {
+      from { transform: translate3d(0, calc(var(--slab-i, 0) * -0.55%), 0) scale(1.06); }
+      to   { transform: translate3d(0, calc(var(--slab-i, 0) *  0.55%), 0) scale(1.06); }
+    }
+  }
+}
+
+.rack__link {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  border-radius: 1px;
+}
+
+/* Pull-to-inspect. flex-grow is animated rather than width so the neighbouring
+   slabs give way rather than the whole row reflowing. Focus gets the identical
+   treatment via :has() — a keyboard user walks the rack exactly like a mouse
+   user does, rather than getting a lesser version of the interaction. */
+@media (hover: hover) and (min-width: 768px) {
+  .rack__slab:hover,
+  .rack__slab:has(.rack__link:focus-visible) {
+    flex-grow: 1.9;
+    transform: translate3d(0, -10px, 0);
+    box-shadow: var(--e-3);
+    z-index: var(--z-raised);
+  }
+}
+.rack__slab:has(.rack__link:focus-visible) { z-index: var(--z-raised); }
+
+.rack__face { position: absolute; inset: 0; }
+
+/* The label rides at the foot of each slab, rotated to read up the edge —
+   the way a slab is actually chalked in a yard. */
+.rack__label {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: var(--s-3) var(--s-2);
+  background: linear-gradient(to top, rgba(31,31,31,0.86), rgba(31,31,31,0));
+  color: #fff;
+  font-family: var(--f-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  inline-size: 100%;
+  min-block-size: 8.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-3);
+}
+
+.rack__name { white-space: nowrap; }
+
+/* The category is the detail you get for leaning in — it appears only once a
+   slab is pulled. On touch there is no hover, so it is simply always shown. */
+.rack__meta {
+  opacity: 0;
+  color: var(--c-border);
+  transition: opacity var(--d-base) var(--ease-out);
+}
+@media (hover: hover) and (min-width: 768px) {
+  .rack__slab:hover .rack__meta,
+  .rack__slab:has(.rack__link:focus-visible) .rack__meta { opacity: 1; }
+}
+
+/* Mobile: rack → strata */
+@media (max-width: 767px) {
+  .rack {
+    flex-direction: column;
+    height: auto;
+    gap: 2px;
+    perspective: none;
+  }
+  .rack__slab {
+    flex: none;
+    height: 56px;                 /* comfortably over the 44px touch minimum */
+    transform-origin: center;
+  }
+  .rack__label {
+    writing-mode: horizontal-tb;
+    transform: none;
+    min-block-size: 0;
+    flex-direction: row;
+    gap: var(--s-2);
+    justify-content: flex-start;
+    padding-inline: var(--s-4);
+    background: linear-gradient(to right, rgba(31,31,31,0.88), rgba(31,31,31,0.2));
+  }
+  .rack__meta { opacity: 1; }
+}
+
+/* ---------------------------------------------------- Reduced motion --
+   Honour the OS setting: no travel, no staggered entrances, no smooth
+   scroll. Content still arrives — it just arrives immediately. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .rack__meta { opacity: 1; transform: none; }
+  /* The scroll cue is a looping animation with no static purpose — remove it
+     entirely rather than freezing it mid-pulse. */
+  .hero::after { display: none; }
+}

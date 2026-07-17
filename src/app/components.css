@@ -1,0 +1,575 @@
+/* =====================================================================
+   8Slabs — Components
+   Loaded after globals.css. Every value here resolves to a token defined
+   there; no raw hex belongs in this file.
+   ===================================================================== */
+
+/* ========================================================== SKIP LINK == */
+.skip {
+  position: absolute;
+  left: var(--s-4);
+  top: -100px;
+  z-index: var(--z-modal);
+  padding: var(--s-3) var(--s-4);
+  background: var(--c-heading);
+  color: var(--c-bg);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  border-radius: var(--radius);
+  transition: top var(--d-fast) var(--ease-out);
+}
+.skip:focus { top: var(--s-4); }
+main:focus { outline: none; }
+
+/* =============================================================== NAV ==
+   A frosted-glass layer that reads as floating ABOVE the page, not printed on
+   it. Three things do that separation, all present from the top of the page
+   (the old bar only gained them on scroll, which is why it merged in):
+     · a real hairline under it,
+     · a soft drop shadow (a layer casts a shadow; painted-on chrome doesn't),
+     · a 1px inner highlight along the top edge — the lit rim of a glass sheet.
+   The backdrop blur + saturation is what frosts the content sliding under it.
+
+   Opacity is held at 82–90% cream on purpose. More transparency would look
+   glassier but the sticky bar passes OVER the dark catalogue band as you
+   scroll the home page; drop the cream too far and the dark bleeds through and
+   the near-black nav text stops being legible. At 82% the effective bar over
+   black is still ~#D0CECC, keeping link text near 9:1. */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  /* 66% cream is the point where you can actually SEE the page frosted through
+     the bar — that's what makes it read as glass. The previous 82% was so
+     opaque it looked like a solid painted strip. 66% over even the pure-black
+     catalogue band still composites to ~#ADABA7, keeping the near-black nav
+     text at ~6:1 (checked), so glassiness costs no legibility. */
+  background: color-mix(in srgb, var(--c-bg) 66%, transparent);
+  backdrop-filter: saturate(200%) blur(22px);
+  -webkit-backdrop-filter: saturate(200%) blur(22px);
+  border-bottom: 1px solid color-mix(in srgb, #fff 35%, var(--c-border));
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 65%, transparent),   /* lit glass rim */
+    0 6px 24px rgba(31, 31, 31, 0.07);
+  transition:
+    background-color var(--d-base) var(--ease-out),
+    border-color var(--d-base) var(--ease-out),
+    box-shadow var(--d-base) var(--ease-out);
+}
+.nav[data-scrolled="true"] {
+  background: color-mix(in srgb, var(--c-bg) 78%, transparent);
+  border-bottom-color: var(--c-border);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 65%, transparent),
+    var(--e-2);
+}
+/* Fallback for browsers without backdrop-filter (older Firefox): go nearly
+   opaque so the frost is never missing AND the text is never at risk. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav { background: color-mix(in srgb, var(--c-bg) 96%, transparent); }
+}
+.nav__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); min-height: 76px; }
+
+.brand { display: inline-flex; align-items: center; gap: var(--s-3); }
+.brand__mark { flex: none; }
+.brand__word {
+  font-family: var(--f-display);
+  font-variation-settings: "wdth" 112;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--c-heading);
+}
+
+.nav__links { display: flex; align-items: center; gap: var(--s-8); }
+.nav__link {
+  position: relative;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-heading);
+  padding-block: var(--s-2);
+  transition: color var(--d-base) var(--ease-out);
+}
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1.5px;
+  background: var(--c-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--d-base) var(--ease-out);
+}
+.nav__link:hover { color: var(--c-accent-ink); }
+.nav__link:hover::after,
+.nav__link[aria-current="page"]::after { transform: scaleX(1); }
+.nav__link[aria-current="page"] { color: var(--c-accent-ink); font-weight: 600; }
+
+.nav__burger {
+  display: none;
+  width: 48px; height: 48px;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 5px;
+  touch-action: manipulation;
+}
+.nav__burger span {
+  width: 22px; height: 1.5px; background: var(--c-heading);
+  transition: transform var(--d-base) var(--ease-out), opacity var(--d-fast) var(--ease-out);
+}
+.nav__burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav__burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.nav__burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+@media (max-width: 900px) {
+  .nav__burger { display: flex; }
+  .nav__links {
+    position: fixed;
+    inset: 76px 0 auto 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: var(--s-4) var(--gutter) var(--s-8);
+    background: var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+    box-shadow: var(--e-2);
+    transform: translate3d(0, -101%, 0);
+    visibility: hidden;
+    /* Closing runs on the exit duration and hides only once it is offscreen. */
+    transition: transform var(--d-exit) var(--ease-in), visibility 0s linear var(--d-exit);
+  }
+  .nav__links[data-open="true"] {
+    transform: none;
+    visibility: visible;
+    transition: transform var(--d-slow) var(--ease-out), visibility 0s;
+  }
+  .nav__link { font-size: var(--t-lg); padding-block: var(--s-4); border-bottom: 1px solid var(--c-hairline); }
+  .nav__link::after { display: none; }
+  .nav__cta { margin-top: var(--s-6); }
+}
+
+/* ============================================================== HERO ==
+   Every page opens on one full viewport height (minus the sticky nav), so the
+   first screen is a deliberate statement rather than a header the eye skims
+   past. svh, not vh: on mobile vh includes the browser toolbar area and would
+   push the hero taller than the visible screen. */
+
+/* ---- Home hero: the rack, centred, cream ----
+   Sized to fit ONE viewport with nothing clipped. The headline is capped well
+   below the global h1 (which runs to 6rem) and the rack is tied to viewport
+   height, so text column and rack both stay inside 100svh − nav on a laptop. */
+.hero {
+  min-height: calc(100vh - var(--nav-h));
+  min-height: calc(100svh - var(--nav-h));
+  display: grid;
+  align-items: center;
+  padding-block: var(--section-sm);
+  position: relative;
+  overflow: hidden;
+}
+/* Grain layer, matching the interior heroes so the home opening has the same
+   tooth. Under the content. */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  opacity: 0.9;
+  pointer-events: none;
+}
+.hero__grid {
+  position: relative;
+  z-index: 1;                            /* above the grain layer */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+}
+@media (max-width: 900px) {
+  .hero { min-height: 0; padding-block: var(--section) var(--section-sm); }
+  .hero__grid { grid-template-columns: 1fr; }
+}
+
+/* Hero headline: capped so the whole column fits one screen. */
+.hero h1 {
+  font-size: clamp(2.1rem, 1rem + 3.4vw, 3.6rem);
+  line-height: 1.0;
+  margin-bottom: var(--s-4);
+}
+.hero__sub { font-size: var(--t-lg); max-width: 46ch; }
+.hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-6); }
+
+/* A spec line, not a stat block: facts set like a material schedule rather
+   than three big numbers with small labels. */
+.hero__spec {
+  display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4);
+  margin-top: var(--s-6);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--c-border);
+}
+.hero__spec span {
+  font-family: var(--f-mono); font-size: var(--t-xs);
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-body);
+}
+.hero__spec b { color: var(--c-heading); font-weight: 500; }
+
+/* ===================================================== INTERIOR HERO ==
+   One structure for About / Catalogue / Journal / Contact: a context line up
+   top, a two-column body (text + a tall stone sample), and a scroll cue —
+   composed so a full screen of height reads as a designed landing, not a
+   headline stranded in empty space. Rendered by PageHero.jsx. */
+/* A typographic, full-height, spec-sheet hero. No fake-photo panel: procedural
+   texture at hero scale reads as a placeholder, so until real slab photography
+   exists the material is carried by grain + type, not a big fake image.
+   Three bands stretched across the full screen — context line, headline,
+   spec footer — so the height reads as a designed landing, not empty space.
+
+   vh fallback FIRST, svh override SECOND: a browser that doesn't understand
+   svh still gets a full-height hero rather than a collapsed one. */
+.phero {
+  position: relative;
+  min-height: calc(100vh - var(--nav-h));
+  min-height: calc(100svh - var(--nav-h));
+  display: flex;
+  /* Padding scales with viewport HEIGHT (svh), so on a short laptop it shrinks
+     automatically instead of shoving the spec bar off-screen. This — plus the
+     height-aware headline below — is what actually stops the overflow. */
+  padding-block: clamp(1.25rem, 4svh, 2.75rem);
+  background-color: var(--c-sunk);
+  background-image: var(--grain);
+  border-bottom: 1px solid var(--c-border);
+}
+/* Extra grain layer, hero-only, so the tooth is actually visible here (the
+   base body grain is deliberately near-subliminal). Sits under the content. */
+.phero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--grain);
+  opacity: 0.9;
+  pointer-events: none;
+}
+/* Three fixed rows — top bar / flexible middle / spec footer — so the hero is
+   a structured composition that fills exactly one screen. The middle row takes
+   all remaining height and CENTRES its content, so the headline block sits in
+   the optical centre with the context line pinned to the top edge and the spec
+   bar to the bottom. Everything is visible together; nothing needs scrolling
+   to reach. */
+.phero__inner {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  min-height: 0;                        /* let the middle row shrink, never force overflow */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: clamp(var(--s-4), 2.5svh, var(--s-8));
+}
+
+.phero__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-4);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--c-hairline);
+}
+.phero__top .mono { color: var(--c-body); }
+
+/* The middle band: eyebrow + headline + lead, CENTRED both ways in the
+   flexible row. The top breadcrumb and bottom spec bar stay pinned to the
+   edges, framing this centred block. */
+.phero__lead {
+  align-self: center;         /* vertical centre of the flexible row */
+  justify-self: center;       /* horizontal centre of the section */
+  max-width: 52ch;
+  text-align: center;
+}
+/* Headline scales with width AND height: large and dominant on a desktop, but
+   the svh term shrinks it on a short laptop so it can never grow tall enough
+   to push the spec bar off-screen. ~2.3rem → 4.75rem. */
+.phero h1 {
+  font-size: clamp(2.3rem, 1rem + 2vw + 2svh, 4.75rem);
+  line-height: 1.0;
+  letter-spacing: -0.035em;
+  margin: var(--s-3) auto;
+  max-width: 20ch;
+}
+.phero__lead .lead { max-width: 48ch; margin-inline: auto; }
+
+@media (max-width: 700px) {
+  .phero__lead { max-width: 100%; }
+}
+
+/* Spec footer: the facts set as a schedule an architect would read. */
+.phero__foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-4) var(--s-8);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--c-hairline);
+}
+.phero__facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4) var(--s-8);
+}
+.phero__fact dt { margin-bottom: var(--s-1); color: var(--c-body); }
+.phero__fact dd {
+  font-family: var(--f-display);
+  font-variation-settings: 'wdth' 104;
+  font-size: var(--t-lg);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--c-heading);
+}
+
+.phero__cue {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-body);
+  white-space: nowrap;
+}
+.phero__cue::after {
+  content: '';
+  width: 56px; height: 1px;
+  background: linear-gradient(90deg, var(--c-accent), transparent);
+}
+
+@media (max-width: 700px) {
+  .phero__lead { max-width: 100%; }
+  .phero__foot { gap: var(--s-4) var(--s-6); }
+  .phero__fact dd { font-size: var(--t-lg); }
+}
+
+/* ---- Scroll cue (home hero only) ----
+   A single hairline that grows and fades downward, saying "there is more
+   below". Decorative, so it lives on a pseudo-element and is removed under
+   reduced motion. */
+.hero::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: var(--s-6);
+  width: 1px;
+  height: 42px;
+  background: linear-gradient(var(--c-accent), transparent);
+  transform-origin: top;
+  animation: scroll-cue 2.4s var(--ease-out) infinite;
+}
+@keyframes scroll-cue {
+  0%   { transform: scaleY(0); opacity: 0; }
+  30%  { transform: scaleY(1); opacity: 1; }
+  70%  { transform: scaleY(1); opacity: 1; }
+  100% { transform: translateY(42px) scaleY(0); opacity: 0; }
+}
+
+/* ============================================================= SPLIT == */
+.split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
+@media (max-width: 850px) { .split { grid-template-columns: 1fr; } }
+.split__media { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--c-border); position: relative; }
+
+/* ============================================================ VALUES == */
+.value { padding-top: var(--s-6); border-top: 2px solid var(--c-heading); }
+.value h3 { margin-bottom: var(--s-3); }
+.value p { font-size: var(--t-sm); }
+
+/* Supply chain — the only numbered list on the site, because it is the only
+   place where the order genuinely carries information. */
+.chain { display: grid; gap: 0; }
+.chain__item {
+  display: grid;
+  grid-template-columns: 4rem 1fr;
+  gap: var(--s-4);
+  padding-block: var(--s-6);
+  border-top: 1px solid var(--c-border);
+  align-items: start;
+}
+.chain__item:last-child { border-bottom: 1px solid var(--c-border); }
+.chain__n { font-family: var(--f-mono); font-size: var(--t-xs); color: var(--c-accent-ink); padding-top: 0.45em; }
+.chain__item h3 { font-size: var(--t-lg); margin-bottom: var(--s-2); }
+.chain__item p { font-size: var(--t-sm); }
+@media (max-width: 600px) { .chain__item { grid-template-columns: 1fr; gap: var(--s-2); } }
+
+/* ========================================================= FACE CARD ==
+   For the dark band only. No card chrome — no white box, no border, no
+   shadow. Just the stone face and a mono caption, because against near-black
+   any container around the stone is competing with it. */
+.face-card { display: block; }
+.face-card__face {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border-radius: 1px;
+}
+.face-card__name {
+  display: block;
+  margin-top: var(--s-4);
+  font-family: var(--f-display);
+  font-variation-settings: 'wdth' 104;
+  font-size: var(--t-lg);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--c-on-dark);
+  transition: color var(--d-base) var(--ease-out);
+}
+.face-card__meta {
+  display: block;
+  margin-top: var(--s-1);
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-on-dark-mut);
+}
+@media (hover: hover) {
+  .face-card .stone-tex { transition: transform 1200ms var(--ease-out); }
+  .face-card:hover .stone-tex { transform: scale(1.055); }
+  .face-card:hover .face-card__name { color: var(--c-accent-dark); }
+}
+
+/* ======================================================== STONE CARD == */
+.stone-card { display: flex; flex-direction: column; scroll-margin-top: 100px; }
+.stone-card__face { aspect-ratio: 4 / 3; position: relative; }
+.stone-card__body { display: flex; flex-direction: column; flex: 1; padding: var(--s-4) var(--s-4) var(--s-6); }
+.stone-card__body h3 { font-size: var(--t-lg); margin: var(--s-3) 0 var(--s-2); }
+.stone-card__blurb { font-size: var(--t-sm); }
+
+/* Specs read as a schedule: mono, label/value, aligned. */
+.spec { display: grid; gap: var(--s-2); margin-top: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--c-hairline); }
+.spec__row { display: grid; grid-template-columns: 5.5rem 1fr; gap: var(--s-3); align-items: baseline; }
+.spec__k { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-body); }
+.spec__v { font-size: var(--t-sm); color: var(--c-heading); }
+
+/* Placeholder disclosure. Stays until real photography lands — a buyer must
+   never mistake a generated texture for the face of the slab they are buying. */
+.photo-flag {
+  position: absolute; left: var(--s-2); top: var(--s-2);
+  padding: 2px var(--s-2);
+  background: color-mix(in srgb, var(--c-footer) 78%, transparent);
+  color: var(--c-bg);
+  font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.08em; text-transform: uppercase;
+  border-radius: 1px;
+}
+
+/* =========================================================== FILTERS == */
+.filters { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-bottom: var(--s-8); }
+.filter {
+  min-height: 44px;
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  font-family: var(--f-mono); font-size: var(--t-xs); letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--c-body);
+  touch-action: manipulation;
+  transition: background-color var(--d-base) var(--ease-out), color var(--d-base) var(--ease-out), border-color var(--d-base) var(--ease-out);
+}
+.filter:hover { border-color: var(--c-accent); color: var(--c-heading); }
+.filter[aria-pressed="true"] { background: var(--c-heading); color: var(--c-bg); border-color: var(--c-heading); }
+.filter__count { opacity: 0.55; margin-left: 0.4em; }
+
+/* ========================================================= POST CARD == */
+.post-card__face { aspect-ratio: 16 / 10; position: relative; }
+/* flex:1 so the body fills the equal-height card and the face stays a fixed
+   ratio — cards in a row line up even when titles/excerpts differ in length. */
+.post-card__body { flex: 1; padding: var(--s-4) var(--s-4) var(--s-6); }
+.post-card__body h3 { font-size: var(--t-lg); margin: var(--s-3) 0 var(--s-2); }
+.post-card__body p { font-size: var(--t-sm); }
+
+/* Honest empty state — used wherever the client has not supplied content yet.
+   An unavailable section explains itself rather than silently disappearing. */
+.empty {
+  padding: var(--s-12) var(--s-6);
+  border: 1px dashed var(--c-border);
+  border-radius: var(--radius-lg);
+  text-align: center;
+}
+.empty h3 { font-size: var(--t-lg); margin-bottom: var(--s-2); }
+.empty p { margin-inline: auto; }
+
+/* =========================================================== CONTACT == */
+.contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+@media (max-width: 850px) { .contact-grid { grid-template-columns: 1fr; } }
+.contact-row {
+  display: flex; gap: var(--s-4); align-items: flex-start;
+  padding-block: var(--s-4);
+  border-bottom: 1px solid var(--c-hairline);
+}
+.contact-row__icon {
+  flex: none; width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border: 1px solid var(--c-border); border-radius: var(--radius);
+  color: var(--c-accent-ink);
+}
+.contact-row__k { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-body); margin-bottom: 2px; }
+.contact-row__v { color: var(--c-heading); font-weight: 500; }
+a.contact-row__v { transition: color var(--d-base) var(--ease-out); }
+a.contact-row__v:hover { color: var(--c-accent-ink); }
+
+/* ========================================================== CTA BAND == */
+.cta-band { background: var(--c-footer); border-radius: var(--radius-lg); padding: clamp(2.5rem, 6vw, 4rem); text-align: center; }
+.cta-band p { margin: var(--s-4) auto var(--s-8); }
+.cta-band__btns { display: flex; gap: var(--s-3); justify-content: center; flex-wrap: wrap; }
+
+/* ============================================================ FOOTER == */
+.footer { background: var(--c-footer); color: var(--c-on-dark-mut); padding-block: var(--s-16) var(--s-8); }
+.footer__grid { display: grid; grid-template-columns: 1.7fr 1fr 1fr 1.3fr; gap: var(--s-8); margin-bottom: var(--s-12); }
+@media (max-width: 800px) { .footer__grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .footer__grid { grid-template-columns: 1fr; } }
+.footer .brand__word { color: var(--c-on-dark); }
+.footer p { font-size: var(--t-sm); }
+.footer h4 {
+  font-family: var(--f-mono); font-size: 0.625rem;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--c-border); margin-bottom: var(--s-4);
+  font-variation-settings: normal; font-weight: 500;
+}
+.footer__list li + li { margin-top: var(--s-2); }
+.footer a { font-size: var(--t-sm); transition: color var(--d-base) var(--ease-out); }
+/* accent-dark, not accent: #A67C52 on the #1F1F1F footer is 4.42:1 — a hair
+   under AA for text this size. */
+.footer a:hover { color: var(--c-accent-dark); }
+.footer__bottom {
+  display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-6); justify-content: space-between;
+  padding-top: var(--s-6);
+  border-top: 1px solid color-mix(in srgb, var(--c-bg) 14%, transparent);
+  font-size: var(--t-xs);
+}
+
+/* ================================================= FLOATING WHATSAPP == */
+.wa-float {
+  position: fixed;
+  right: max(var(--s-4), env(safe-area-inset-right));
+  bottom: max(var(--s-4), env(safe-area-inset-bottom));
+  z-index: var(--z-float);
+  width: 56px; height: 56px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: var(--c-whatsapp);
+  color: #fff;
+  box-shadow: var(--e-2);
+  touch-action: manipulation;
+  transition: transform var(--d-base) var(--ease-out), box-shadow var(--d-base) var(--ease-out);
+}
+.wa-float:hover { transform: scale(1.06); box-shadow: var(--e-3); }
+.wa-float:active { transform: scale(0.98); }
+
+/* ============================================================== NOTE == */
+.note {
+  padding: var(--s-4);
+  border: 1px dashed var(--c-border);
+  border-radius: var(--radius);
+  font-size: var(--t-sm);
+  background: var(--c-surface);
+}
+.note b { color: var(--c-accent-ink); }
+
+/* ========================================================== NOT FOUND == */
+.nf { padding-block: var(--s-24); text-align: center; }
+.nf p { margin: var(--s-4) auto var(--s-8); }

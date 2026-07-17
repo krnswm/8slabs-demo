@@ -1,0 +1,19 @@
+{
+  "name": "8slabs-website",
+  "private": true,
+  "version": "2.0.0",
+  "description": "Marketing website for 8Slabs — Indian natural stone exporter.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "preview": "serve out"
+  },
+  "dependencies": {
+    "next": "^15.5.20",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "serve": "^14.2.6"
+  }
+}

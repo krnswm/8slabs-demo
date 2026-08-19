@@ -249,6 +249,80 @@ export const stones = [
   },
 ]
 
+/**
+ * Stone families — the catalogue's new top level.
+ *
+ * Client feedback: "May be we put random granite, marble, sand stone and
+ * quartzites in the catalogue without specifying the number of stones we are
+ * dealing in……. A definition on right and left about the stone type."
+ *
+ * So the catalogue leads with the MATERIAL, not a counted SKU list: each family
+ * carries its own definition plus Applications and Finishes lines, with a
+ * representative selection of stones beside it. No counts are shown anywhere.
+ *
+ * COPY STATUS:
+ *   · Granite — the client's own words, verbatim from their feedback.
+ *   · All others — drafted here in the client's exact format and voice, from
+ *     general material knowledge. These are technical descriptions of stone
+ *     types rather than claims about the business, but they still need Simant's
+ *     sign-off before launch.
+ *
+ * `name` must match a `category` value on the stones above.
+ */
+export const families = [
+  {
+    name: 'Granite',
+    approved: true, // client-supplied copy
+    blurb:
+      'Strong, durable and versatile, Indian granite is available in a wide range of colours, patterns and finishes. Its excellent resistance to wear and weather makes it suitable for both interior and exterior applications.',
+    applications: 'Flooring, cladding, countertops, stairs, paving and landscaping.',
+    finishes: 'Polished, honed, leathered, flamed and brushed, depending on the stone.',
+  },
+  {
+    name: 'Marble',
+    approved: false,
+    blurb:
+      'Prized for its depth and veining, Indian marble runs from the bright whites of Makrana to richly figured browns and greens. It is a softer stone that rewards interior use, where the surface and pattern are seen close up.',
+    applications: 'Flooring, feature walls, countertops, vanities, sculpture and interior cladding.',
+    finishes: 'Polished, honed and leathered, depending on the stone.',
+  },
+  {
+    name: 'Sandstone',
+    approved: false,
+    blurb:
+      'India’s most widely exported natural stone. Warm, earthy tones and a naturally riven face with good slip resistance, it weathers well outdoors and has long been a standard for landscaping across Europe.',
+    applications: 'Paving, patios, garden landscaping, walling, cladding and facades.',
+    finishes: 'Natural, sawn, honed, sandblasted, tumbled and brushed.',
+  },
+  {
+    name: 'Quartzite',
+    approved: false,
+    blurb:
+      'One of the hardest natural stones. Quartzite splits to a naturally cleft face with a mica-rich shimmer, and its strength and texture suit feature cladding and facades that have to last.',
+    applications: 'Wall cladding, facades, paving and landscaping.',
+    finishes: 'Natural, cleft and honed.',
+  },
+  {
+    name: 'Limestone',
+    approved: false,
+    blurb:
+      'Dense and fine-grained, Indian limestone gives a calm, uniform surface in blues, browns and blacks. Hard-wearing and low-maintenance, it performs equally well underfoot indoors and around wet areas.',
+    applications: 'Flooring, paving, wet areas, cladding and countertops.',
+    finishes: 'Natural, honed, polished and leathered.',
+  },
+  {
+    name: 'Slate',
+    approved: false,
+    blurb:
+      'A fine-grained stone that cleaves into thin, even layers, from deep uniform blacks to warm autumnal multicolours. Naturally low-porosity and hard-wearing.',
+    applications: 'Wall cladding, roofing, flooring and paving.',
+    finishes: 'Natural, cleft, calibrated and honed.',
+  },
+]
+
+/** Stones belonging to a family, in catalogue order. */
+export const stonesIn = (familyName) => stones.filter((s) => s.category === familyName)
+
 /** Resolved rack stones, kept in RACK_IDS order (not catalogue order). */
 export const rackStones = RACK_IDS.map((id) => {
   const stone = stones.find((s) => s.id === id)

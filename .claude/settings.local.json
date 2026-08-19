@@ -18,7 +18,8 @@
       "Bash(curl -sL \"https://api.github.com/repos/nextlevelbuilder/ui-ux-pro-max-skill/contributors?per_page=10\")",
       "Bash(curl -sL \"https://api.github.com/users/mrgoonie\")",
       "Bash(curl -sL \"https://raw.githubusercontent.com/nextlevelbuilder/ui-ux-pro-max-skill/main/.releaserc.json\")",
-      "Bash(npm --version)"
+      "Bash(npm --version)",
+      "Read(//c/Users/karan/AppData/Local/Temp/claude/C--Users-karan-OneDrive-Desktop-Projects-8slabs/9bd1530b-2c5c-4600-9c1e-4900c6ef7ae7/scratchpad/**)"
     ]
   }
 }

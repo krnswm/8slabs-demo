@@ -39,35 +39,46 @@ export default function About() {
           implying a corporate history that does not exist. */}
       <section className="section">
         <div className="container split">
+          {/* Client's own copy, verbatim from their feedback document. */}
           <Reveal>
             <span className="eyebrow">The short version</span>
-            <h2>Ten years learning what goes wrong.</h2>
+            <h2>Ten Years Learning What Goes Wrong</h2>
             <div className="stack" style={{ marginTop: 'var(--s-6)' }}>
               <p>
                 I spent the last decade with one of India’s leading natural stone
                 export companies, working across international business, customer
-                relationships and quality assurance. That is where you learn what
-                actually goes wrong on a container — and it is rarely the stone.
+                relationships, and quality assurance. That is where you learn
+                what actually goes wrong with a container—and it is rarely the
+                stone itself.
               </p>
               <p>
-                It is a batch that drifted from the approved sample. A finish
-                agreed on a call and never written down. A production window that
-                quietly slipped three weeks before anyone said so. Every one of
-                those is a communication failure wearing a technical costume.
+                It is a batch that drifts from the approved sample. A finish
+                agreed on a call but never written down. A production schedule
+                that quietly slips by three weeks before anyone says so. Every
+                one of these is a communication failure wearing a technical
+                costume.
+              </p>
+              <p>8Slabs exists to close that gap.</p>
+              <p>
+                My knowledge spans North India’s stone belt—sandstone, limestone,
+                quartzite, slate, and the regional materials around them—as well
+                as the full supply chain: identifying the right material,
+                sourcing from processors I have worked with for years,
+                maintaining quality, and getting it onto the ship on the date I
+                committed to.
               </p>
               <p>
-                8Slabs exists to close that gap. My knowledge runs across North
-                India’s stone belt — sandstone, limestone, quartzite, slate and
-                the regional materials around them — and across the full chain:
-                identifying the right material, sourcing from processors I have
-                worked with for years, holding quality, and getting it onto the
-                ship on the date I gave you.
+                I believe long-term business is built on trust, transparency, and
+                keeping commitments. These are not slogans on a wall here; they
+                are the foundation of how I work.
               </p>
               <p>
-                Long-term business is built on trust, transparency and honouring
-                commitments. That is not a slogan on a wall here; it is the only
-                thing a one-person operation has to sell.
+                As a one-person operation, I do not have a large team or layers
+                of management to hide behind. What I have is experience,
+                relationships, accountability, and a commitment to do what I say
+                I will do.
               </p>
+              <p>That is what 8Slabs is built on.</p>
             </div>
           </Reveal>
 

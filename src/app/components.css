@@ -22,53 +22,230 @@
 main:focus { outline: none; }
 
 /* =============================================================== NAV ==
-   A frosted-glass layer that reads as floating ABOVE the page, not printed on
-   it. Three things do that separation, all present from the top of the page
-   (the old bar only gained them on scroll, which is why it merged in):
-     · a real hairline under it,
-     · a soft drop shadow (a layer casts a shadow; painted-on chrome doesn't),
-     · a 1px inner highlight along the top edge — the lit rim of a glass sheet.
-   The backdrop blur + saturation is what frosts the content sliding under it.
+   Liquid glass: a floating pill, not a painted strip. Four things make it read
+   as a physical lens rather than a band drawn on the page —
 
-   Opacity is held at 82–90% cream on purpose. More transparency would look
-   glassier but the sticky bar passes OVER the dark catalogue band as you
-   scroll the home page; drop the cream too far and the dark bleeds through and
-   the near-black nav text stops being legible. At 82% the effective bar over
-   black is still ~#D0CECC, keeping link text near 9:1. */
+     1. it floats. The wrapper takes no layout height, so the pill sits OVER
+        the hero and has something behind it to work on. Glass over a blank
+        strip is just a rounded rectangle.
+     2. it refracts. An SVG displacement filter bends the backdrop at the rim
+        (see .nav__refract), which is the cue blur alone cannot give you.
+     3. it has edges. A bright specular top rim, softer side rims, a dimmer
+        bottom, an inner base bounce and a raking sheen. Edge lighting is what
+        reads as thickness.
+     4. it adapts. Light glass over light pages, DARK glass over the hero
+        photograph — see the dark-theme block further down for why that is a
+        legibility requirement and not a preference.
+
+   The wrapper stays transparent and click-through; only the pill is glass. */
 .nav {
   position: sticky;
   top: 0;
   z-index: var(--z-sticky);
-  /* 66% cream is the point where you can actually SEE the page frosted through
-     the bar — that's what makes it read as glass. The previous 82% was so
-     opaque it looked like a solid painted strip. 66% over even the pure-black
-     catalogue band still composites to ~#ADABA7, keeping the near-black nav
-     text at ~6:1 (checked), so glassiness costs no legibility. */
-  background: color-mix(in srgb, var(--c-bg) 66%, transparent);
-  backdrop-filter: saturate(200%) blur(22px);
-  -webkit-backdrop-filter: saturate(200%) blur(22px);
-  border-bottom: 1px solid color-mix(in srgb, #fff 35%, var(--c-border));
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 65%, transparent),   /* lit glass rim */
-    0 6px 24px rgba(31, 31, 31, 0.07);
+  padding: var(--s-3) var(--gutter);
+  background: none;
+  border: 0;
+  box-shadow: none;
+  pointer-events: none;
+  /* Take up no layout height, so the pill floats OVER the hero instead of
+     sitting on a cream band above it. Glass needs something behind it to
+     refract — over a blank strip it is just a rounded rectangle. Every hero
+     adds --nav-h back as top padding so nothing hides underneath. */
+  margin-bottom: calc(-1 * var(--nav-h));
+}
+.nav__inner {
+  pointer-events: auto;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  min-height: 52px;                      /* 12 + 52 + 12 = --nav-h (76px) */
+  padding-inline: var(--s-4) var(--s-3);
+  border-radius: 999px;
+  /* 62% cream: transparent enough to see the page move underneath, opaque
+     enough that the near-black nav text still clears AA over the darkest
+     thing it ever passes over (the hero photograph). */
+  background: color-mix(in srgb, var(--c-bg) 62%, transparent);
+  backdrop-filter: blur(30px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1px solid color-mix(in srgb, #fff 50%, transparent);
+  /* Edge lighting is what reads as thickness. Glass is not one highlight — it
+     is a bright top rim, softer rims down both sides, a dimmer bottom, and a
+     bounce off the inner base.
+
+     Split into two custom properties on purpose. The scrolled and dark states
+     need to change the FLOAT (how high it sits) and the tint, but the rims are
+     what make it glass and must never be replaced. Re-declaring the whole
+     box-shadow in those states is how the rims silently dropped from six
+     layers to four the moment the page scrolled. */
+  --glass-rim:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.92),       /* specular top rim */
+    inset 1px 0 1px -0.5px rgba(255, 255, 255, 0.55),  /* left rim */
+    inset -1px 0 1px -0.5px rgba(255, 255, 255, 0.55), /* right rim */
+    inset 0 -1px 1px -0.5px rgba(255, 255, 255, 0.40), /* bottom rim */
+    inset 0 -14px 26px -14px rgba(255, 255, 255, 0.30);/* inner base bounce */
+  --glass-float:
+    0 12px 32px rgba(31, 31, 31, 0.18),
+    0 2px 8px rgba(31, 31, 31, 0.10);
+  box-shadow: var(--glass-rim), var(--glass-float);
+  transition:
+    background-color var(--d-base) var(--ease-out),
+    box-shadow var(--d-base) var(--ease-out);
+}
+/* The CTA sits inside a 52px pill; at the site-wide 48px it left 2px of air
+   top and bottom and read as jammed in. 44px keeps the touch-target floor and
+   gives the pill room to breathe around it.
+
+   Fully rounded, unlike every other button on the site — a pill nested inside
+   the pill nav. The square-cut radius elsewhere is deliberate (stone is cut,
+   not moulded), but a 2px corner sitting inside a 999px one reads as a
+   mistake rather than a contrast. */
+.nav__cta {
+  min-height: 44px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+/* The sheen — a raking highlight across the glass face. */
+.nav__inner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    146deg,
+    rgba(255, 255, 255, 0.50) 0%,
+    rgba(255, 255, 255, 0.10) 32%,
+    rgba(255, 255, 255, 0.00) 56%,
+    rgba(255, 255, 255, 0.09) 100%
+  );
+}
+
+/* The refraction. Masked to the RIM: real glass bends light most where it is
+   thickest, at the edge — and, practically, an undistorted centre is what keeps
+   the links crisp. Displacing the whole pill would smear the page behind the
+   text and make the nav feel dirty rather than glassy. */
+.nav__refract {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  backdrop-filter: url('#nav-glass');
+  -webkit-backdrop-filter: url('#nav-glass');
+  -webkit-mask-image: radial-gradient(115% 140% at 50% 50%, transparent 34%, #000 72%);
+  mask-image: radial-gradient(115% 140% at 50% 50%, transparent 34%, #000 72%);
+}
+/* The filter itself must be in the DOM but never laid out. display:none would
+   stop some engines resolving the reference, so it is sized to nothing instead. */
+.nav__filter { position: absolute; width: 0; height: 0; pointer-events: none; }
+
+/* An SVG displacement recomputed against a moving backdrop on every scroll
+   frame is one of the most expensive things a compositor can be asked to do.
+   It buys the least on a small screen (a 40px-tall pill has almost no rim to
+   refract) and costs the most there, so phones keep the blur and drop the lens. */
+@media (max-width: 860px) {
+  .nav__refract { display: none; }
+}
+/* Scrolled: it lifts a little higher and tightens its tint. Only the float
+   changes — the rims are inherited, so the glass stays glass. */
+.nav[data-scrolled="true"] .nav__inner {
+  background: color-mix(in srgb, var(--c-bg) 76%, transparent);
+  --glass-float:
+    0 18px 44px rgba(31, 31, 31, 0.24),
+    0 3px 10px rgba(31, 31, 31, 0.14);
+}
+/* No backdrop-filter (older Firefox): there is no frost to see through, so go
+   nearly opaque — a see-through pill with no blur is just unreadable text. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav__inner { background: color-mix(in srgb, var(--c-bg) 96%, transparent); }
+}
+
+/* ================================================== DARK GLASS (on photo) ==
+   While the pill floats over the hero photograph it inverts: smoked-dark glass
+   with light type. Switched live in Nav.jsx by measuring whether a .hero--dark
+   is still under the pill, so it stays correct at any hero height.
+
+   This is a legibility requirement, not a style preference. A translucent
+   CREAM pill over a dark photograph composites to flat mid-grey — which is
+   both why it read as a painted bar and why its dark type only scraped 4.9:1.
+   Tinting DOWN instead keeps the pill dark wherever it sits (the photo behind
+   it is not uniform; it brightens toward the right, exactly where the links
+   are), and cream type on it measures ~10.7:1. */
+.nav[data-theme="dark"] .nav__inner {
+  /* A dark TINT, not a white lift. A lift was the first instinct — it makes
+     the pill glow against near-black — but the photograph behind the nav is
+     not uniformly dark: it brightens to ~0.45 luminance on the right, which is
+     exactly where the links sit, and cream type there measured under 2:1.
+     Tinting down instead means the pill is guaranteed dark wherever it sits,
+     while still being see-through: you get the photograph, darkened, which is
+     what dark glass actually is. The rims and sheen supply the glassy lift. */
+  /* Smoked, not clear: the image still reads through it, darkened. 0.55 is set
+     from measurement under the link rectangles themselves — the earlier, much
+     heavier values were chasing a bright pixel in the decorative corner sheen
+     that no glyph ever sits on. */
+  background: rgba(18, 16, 14, 0.55);
+  border-color: rgba(255, 255, 255, 0.24);
+  /* Same rim structure, dialled down — a rim as bright as the light theme's
+     reads as a white outline against dark rather than as an edge catching
+     light. Still five layers: the glass does not degrade on this theme either. */
+  --glass-rim:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.60),
+    inset 1px 0 1px -0.5px rgba(255, 255, 255, 0.26),
+    inset -1px 0 1px -0.5px rgba(255, 255, 255, 0.26),
+    inset 0 -1px 1px -0.5px rgba(255, 255, 255, 0.20),
+    inset 0 -18px 30px -18px rgba(255, 255, 255, 0.22);
+  --glass-float: 0 14px 40px rgba(0, 0, 0, 0.45);
+}
+.nav[data-theme="dark"][data-scrolled="true"] .nav__inner {
+  --glass-float: 0 20px 52px rgba(0, 0, 0, 0.55);
+}
+.nav[data-theme="dark"][data-scrolled="true"] .nav__inner {
+  background: rgba(18, 16, 14, 0.68);
+}
+/* The sheen has to be weaker on dark or it reads as a white smear. */
+.nav[data-theme="dark"] .nav__inner::before {
+  background: linear-gradient(
+    146deg,
+    rgba(255, 255, 255, 0.22) 0%,
+    rgba(255, 255, 255, 0.05) 34%,
+    rgba(255, 255, 255, 0.00) 58%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+}
+
+/* Type inverts with the glass. */
+.nav[data-theme="dark"] {
+  --mark-plate: rgba(255, 255, 255, 0.14);
+  --mark-bar: rgba(255, 255, 255, 0.55);
+}
+.nav[data-theme="dark"] .brand__word,
+.nav[data-theme="dark"] .nav__link { color: var(--c-bg); }
+.nav[data-theme="dark"] .nav__link:hover,
+.nav[data-theme="dark"] .nav__link[aria-current="page"] { color: var(--c-gold); }
+.nav[data-theme="dark"] .nav__link::after { background: var(--c-gold); }
+.nav[data-theme="dark"] .nav__burger span { background: var(--c-bg); }
+/* The dark-on-dark CTA would disappear, so it flips to a cream fill. */
+.nav[data-theme="dark"] .nav__cta { background: var(--c-bg); color: var(--c-heading); }
+.nav[data-theme="dark"] .nav__cta::before { background: var(--c-gold); }
+.nav[data-theme="dark"] .nav__cta:hover,
+.nav[data-theme="dark"] .nav__cta:focus-visible { color: var(--c-heading); }
+
+/* Colour changes on a sticky element are jarring if they snap. */
+.nav__inner,
+.brand__word,
+.nav__link,
+.nav__cta {
   transition:
     background-color var(--d-base) var(--ease-out),
     border-color var(--d-base) var(--ease-out),
-    box-shadow var(--d-base) var(--ease-out);
+    box-shadow var(--d-base) var(--ease-out),
+    color var(--d-base) var(--ease-out);
 }
-.nav[data-scrolled="true"] {
-  background: color-mix(in srgb, var(--c-bg) 78%, transparent);
-  border-bottom-color: var(--c-border);
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, #fff 65%, transparent),
-    var(--e-2);
-}
-/* Fallback for browsers without backdrop-filter (older Firefox): go nearly
-   opaque so the frost is never missing AND the text is never at risk. */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .nav { background: color-mix(in srgb, var(--c-bg) 96%, transparent); }
-}
-.nav__inner { display: flex; align-items: center; justify-content: space-between; gap: var(--s-4); min-height: 76px; }
 
 .brand { display: inline-flex; align-items: center; gap: var(--s-3); }
 .brand__mark { flex: none; }
@@ -122,29 +299,69 @@ main:focus { outline: none; }
 
 @media (max-width: 900px) {
   .nav__burger { display: flex; }
+  /* The dropdown is the same glass, as a rounded panel tucked under the pill —
+     a full-bleed opaque sheet would break the floating-lens illusion. */
+  /* ABSOLUTE, not fixed. An ancestor with backdrop-filter becomes the
+     containing block for fixed descendants, so `position: fixed` here resolved
+     against the pill instead of the viewport — the panel came out inset by the
+     pill's own offsets (x 41 / w 308 instead of x 20 / w 350). Anchoring it to
+     the pill deliberately gives the same intended result and cannot drift. */
   .nav__links {
-    position: fixed;
-    inset: 76px 0 auto 0;
+    position: absolute;
+    top: calc(100% + var(--s-2));
+    left: 0;
+    right: 0;
     flex-direction: column;
     align-items: stretch;
     gap: 0;
-    padding: var(--s-4) var(--gutter) var(--s-8);
+    /* --s-5 does not exist in the scale. As an undefined custom property it
+       made the whole shorthand invalid, so the dropdown silently rendered with
+       NO padding and its links ran edge to edge over the rounded corners. */
+    padding: var(--s-2) var(--s-6) var(--s-6);
+    border-radius: 20px;
+    /* Solid, not translucent. At 92% the hero headline read straight through
+       and collided with the menu labels; even at 97% a ~6% luminance ghost of
+       it remained. The glass is the pill's job — a menu you are reading has to
+       be an opaque surface. */
     background: var(--c-bg);
-    border-bottom: 1px solid var(--c-border);
-    box-shadow: var(--e-2);
-    transform: translate3d(0, -101%, 0);
+    border: 1px solid color-mix(in srgb, #fff 50%, transparent);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.85),
+      0 16px 40px rgba(31, 31, 31, 0.28);
+    transform: translate3d(0, -8px, 0) scale(0.985);
+    transform-origin: top center;
+    opacity: 0;
     visibility: hidden;
-    /* Closing runs on the exit duration and hides only once it is offscreen. */
-    transition: transform var(--d-exit) var(--ease-in), visibility 0s linear var(--d-exit);
+    transition:
+      opacity var(--d-exit) var(--ease-in),
+      transform var(--d-exit) var(--ease-in),
+      visibility 0s linear var(--d-exit);
   }
   .nav__links[data-open="true"] {
     transform: none;
+    opacity: 1;
     visibility: visible;
-    transition: transform var(--d-slow) var(--ease-out), visibility 0s;
+    transition:
+      opacity var(--d-base) var(--ease-out),
+      transform var(--d-slow) var(--ease-out),
+      visibility 0s;
   }
   .nav__link { font-size: var(--t-lg); padding-block: var(--s-4); border-bottom: 1px solid var(--c-hairline); }
   .nav__link::after { display: none; }
   .nav__cta { margin-top: var(--s-6); }
+
+  /* The dropdown is an opaque CREAM panel whatever the pill is doing, so its
+     contents must not inherit the dark-glass palette. Without this the menu
+     on the home page rendered cream links on a cream sheet — measured 1.00:1,
+     i.e. completely invisible once opened. The pill's own brand and burger
+     stay light, because those really are on the dark glass. */
+  .nav[data-theme="dark"] .nav__links .nav__link { color: var(--c-heading); }
+  .nav[data-theme="dark"] .nav__links .nav__link:hover,
+  .nav[data-theme="dark"] .nav__links .nav__link[aria-current="page"] { color: var(--c-accent-ink); }
+  .nav[data-theme="dark"] .nav__cta { background: var(--c-btn); color: var(--c-bg); }
+  .nav[data-theme="dark"] .nav__cta::before { background: var(--c-accent-ink); }
+  .nav[data-theme="dark"] .nav__cta:hover,
+  .nav[data-theme="dark"] .nav__cta:focus-visible { color: var(--c-bg); }
 }
 
 /* ============================================================== HERO ==
@@ -153,64 +370,154 @@ main:focus { outline: none; }
    past. svh, not vh: on mobile vh includes the browser toolbar area and would
    push the hero taller than the visible screen. */
 
-/* ---- Home hero: the rack, centred, cream ----
-   Sized to fit ONE viewport with nothing clipped. The headline is capped well
-   below the global h1 (which runs to 6rem) and the rack is tied to viewport
-   height, so text column and rack both stay inside 100svh − nav on a laptop. */
+/* ---- Home hero: asymmetric editorial split ----
+   Three bands over exactly one viewport — title rail, split, material base.
+   Same three-row skeleton as the interior heroes, so home and inside pages
+   are visibly the same system, just at different scale and tone. */
 .hero {
-  min-height: calc(100vh - var(--nav-h));
-  min-height: calc(100svh - var(--nav-h));
-  display: grid;
-  align-items: center;
-  padding-block: var(--section-sm);
   position: relative;
+  /* Full viewport now — the nav floats over it rather than above it. */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  padding-block: calc(var(--nav-h) + clamp(0.25rem, 1.5svh, 1rem)) clamp(1rem, 3svh, 2.5rem);
   overflow: hidden;
 }
-/* Grain layer, matching the interior heroes so the home opening has the same
-   tooth. Under the content. */
-.hero::before {
+.hero__inner {
+  position: relative;
+  z-index: 1;                            /* above the background layers */
+  flex: 1;
+  min-height: 0;                         /* the middle row may shrink */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: clamp(var(--s-3), 2svh, var(--s-6));
+}
+
+/* Title block */
+.hero__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--s-4);
+  padding-bottom: var(--s-3);
+  border-bottom: 1px solid var(--c-hairline);
+}
+
+/* The split, set on a DIAGONAL: headline anchored top-left, supporting copy
+   and actions anchored bottom-right. Centring both left a dead band above and
+   below on a laptop — the content floated in a void. Pushing the two blocks to
+   opposite corners makes the empty space read as deliberate composition rather
+   than as a gap, and the eye travels the diagonal from headline to CTA. */
+/* ---- The photograph ---- */
+.hero__media { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+.hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Biased right so the stacked slabs stay in the clear half rather than
+     sitting behind the headline. */
+  object-position: 68% 50%;
+}
+/* Scrim stack, measured against the real pixels of the photograph:
+     · vertical bands protect the full-width top and bottom rails
+     · the raking band keeps the left column at/над 78% black, where the
+       headline lives, then releases to ~22% so the stone reads on the right
+   Cream text needs the background under it below 0.164 luminance for 4.5:1;
+   the photo peaks at 0.643 in the headline zone, hence 78%. */
+.hero__media::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: var(--grain);
-  opacity: 0.9;
-  pointer-events: none;
-}
-.hero__grid {
-  position: relative;
-  z-index: 1;                            /* above the grain layer */
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.02fr);
-  gap: clamp(2rem, 5vw, 4.5rem);
-  align-items: center;
-}
-@media (max-width: 900px) {
-  .hero { min-height: 0; padding-block: var(--section) var(--section-sm); }
-  .hero__grid { grid-template-columns: 1fr; }
+  background:
+    /* Shaped, not a straight ramp from black. The old 0.93-at-the-very-top
+       curve made the strip the nav floats on almost pure black — so the glass
+       had nothing behind it to refract and could only read as a grey bar. This
+       opens the top 10% so the photograph shows through the pill, then peaks
+       BELOW it to protect the title rail (which spans the full width and
+       crosses the bright side of the image), then releases. */
+    linear-gradient(180deg,
+      rgba(0,0,0,0.30) 0%,
+      rgba(0,0,0,0.86) 10%,
+      rgba(0,0,0,0) 28%),
+    linear-gradient(0deg,   rgba(0,0,0,0.88) 0%, rgba(0,0,0,0) 26%),
+    linear-gradient(100deg,
+      rgba(0,0,0,0.72) 0%,
+      rgba(0,0,0,0.66) 36%,
+      rgba(0,0,0,0.56) 52%,
+      rgba(0,0,0,0.26) 76%,
+      rgba(0,0,0,0.12) 100%),
+    var(--grain-dark);
 }
 
-/* Hero headline: capped so the whole column fits one screen. */
+/* ---- Type: one structured column on the left ---- */
+.hero__body {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(var(--s-4), 2.5svh, var(--s-6));
+  /* Held inside the protected half of the scrim. */
+  max-width: min(52%, 40rem);
+  min-height: 0;
+}
 .hero h1 {
-  font-size: clamp(2.1rem, 1rem + 3.4vw, 3.6rem);
-  line-height: 1.0;
-  margin-bottom: var(--s-4);
+  /* Weighted toward HEIGHT (svh) rather than width. Measured at 1280x720 an
+     earlier size produced a 675px hero in a 643px space — a laptop had to
+     scroll to reach the material rail. Leaning on svh means the headline gives
+     way on short screens and only grows on tall ones, which is the axis that
+     actually constrains this layout. */
+  font-size: clamp(1.9rem, 0.4rem + 1.5vw + 2.4svh, 4.2rem);
+  line-height: 0.94;
+  letter-spacing: -0.038em;
+  margin: 0;
+  text-shadow: 0 1px 24px rgba(0, 0, 0, 0.4);   /* seats the type on the photo */
 }
-.hero__sub { font-size: var(--t-lg); max-width: 46ch; }
-.hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-6); }
+.hero__sub { font-size: var(--t-base); max-width: 46ch; }
+.hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-2); }
 
-/* A spec line, not a stat block: facts set like a material schedule rather
-   than three big numbers with small labels. */
-.hero__spec {
-  display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-4);
-  margin-top: var(--s-6);
+/* The range, as the hero's base. */
+.hero__materials {
   padding-top: var(--s-4);
-  border-top: 1px solid var(--c-border);
+  border-top: 1px solid var(--c-hairline);
 }
-.hero__spec span {
-  font-family: var(--f-mono); font-size: var(--t-xs);
-  letter-spacing: 0.06em; text-transform: uppercase; color: var(--c-body);
+.hero__materials ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2) clamp(var(--s-4), 3.5vw, var(--s-12));
 }
-.hero__spec b { color: var(--c-heading); font-weight: 500; }
+.hero__materials a {
+  display: inline-block;
+  padding-block: var(--s-1);
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--c-body);
+  transition: color var(--d-base) var(--ease-out);
+}
+.hero__materials a:hover { color: var(--c-accent-ink); }
+
+/* Phone: one column, and the copy follows the headline rather than sitting
+   beside it. The material rail stays — it is the page's fastest route in. */
+@media (max-width: 860px) {
+  .hero__body { max-width: 100%; }
+  .hero__sub { max-width: 100%; }
+  /* Type now spans the full width, so the raking scrim no longer has a clear
+     half to protect — the whole frame has to carry the 78% floor instead. The
+     photo is still visible, just deeper in the mix. */
+  /* Type spans the full width here, so there is no clear half to protect and
+     the whole frame has to carry the floor. Biased toward the photograph
+     rather than legibility headroom: measured, the mobile backdrop was sitting
+     at 0.025 luminance against a 0.164 ceiling — ~6x more scrim than AA needs.
+     These values let the stone through and still clear AA with margin. */
+  .hero__media::after {
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.30) 24%),
+      linear-gradient(0deg,   rgba(0,0,0,0.84) 0%, rgba(0,0,0,0.18) 28%),
+      linear-gradient(100deg, rgba(0,0,0,0.42) 0%, rgba(0,0,0,0.34) 100%),
+      var(--grain-dark);
+  }
+  .hero__media img { object-position: 60% 50%; }
+}
 
 /* ===================================================== INTERIOR HERO ==
    One structure for About / Catalogue / Journal / Contact: a context line up
@@ -227,14 +534,18 @@ main:focus { outline: none; }
    svh still gets a full-height hero rather than a collapsed one. */
 .phero {
   position: relative;
-  min-height: calc(100vh - var(--nav-h));
-  min-height: calc(100svh - var(--nav-h));
+  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   /* Padding scales with viewport HEIGHT (svh), so on a short laptop it shrinks
-     automatically instead of shoving the spec bar off-screen. This — plus the
-     height-aware headline below — is what actually stops the overflow. */
-  padding-block: clamp(1.25rem, 4svh, 2.75rem);
-  background-color: var(--c-sunk);
+     automatically instead of shoving the spec bar off-screen. The top also
+     clears the floating nav, which no longer occupies layout height. */
+  padding-block: calc(var(--nav-h) + clamp(0.25rem, 1.5svh, 1rem)) clamp(1.25rem, 4svh, 2.75rem);
+  /* Lighter than before, per client feedback ("darker on the home and maybe
+     lighter inside"): interior heroes now sit on the page cream rather than
+     the sunk greige, so arriving from the dark home feels like stepping into
+     the light. */
+  background-color: var(--c-bg);
   background-image: var(--grain);
   border-bottom: 1px solid var(--c-border);
 }
@@ -347,11 +658,13 @@ main:focus { outline: none; }
   .phero__fact dd { font-size: var(--t-lg); }
 }
 
-/* ---- Scroll cue (home hero only) ----
-   A single hairline that grows and fades downward, saying "there is more
-   below". Decorative, so it lives on a pseudo-element and is removed under
-   reduced motion. */
-.hero::after {
+/* ---- Scroll cue ----
+   NOT used on the home hero any more: it is pinned bottom-centre, and the
+   material rail now occupies that exact strip — the cue rendered as a stray
+   1px tick sitting between LIMESTONE and SLATE. The rail already tells you
+   the page continues, so the cue would be redundant even if it cleared.
+   Kept here for any future full-bleed hero that has an empty base. */
+.hero--cue::after {
   content: '';
   position: absolute;
   left: 50%;
@@ -573,3 +886,181 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
 /* ========================================================== NOT FOUND == */
 .nf { padding-block: var(--s-24); text-align: center; }
 .nf p { margin: var(--s-4) auto var(--s-8); }
+
+/* ========================================================= DARK HERO ==
+   Client feedback: "A darker background on the home and may be lighter inside
+   will be good." The home hero uses the brand near-black already in the SRS
+   palette (#1F1F1F) — no new colour invented. Dark is spent on exactly two
+   places now: this hero and the closing CTA band before the footer. */
+.hero--dark {
+  /* The ground is a DARK base carrying a directional warm light — not a mid
+     brown. A warm mid-tone fill (the previous --c-ink) rendered as flat mud at
+     full-screen scale: with nothing lighter or darker to play against, the eye
+     reads it as one dead colour. Keeping the base near-black and putting all
+     the warmth into a raking light gives the surface somewhere to travel, and
+     the accent only appears where the light falls — which is how stone
+     actually looks in a yard.
+
+     Layers, painted top-down:
+       1. grain-dark   coarse tooth, ~13% — visible on a dark ground
+       2. key light    strong warm bronze from the upper left
+       3. fill light   weaker, opposite corner, stops the right going dead
+       4. sheen        a long diagonal wash across the whole face
+       5. vignette     pulls the corners down so the type sits forward */
+  background-color: var(--c-footer);
+  background-image:
+    var(--grain-dark),
+    radial-gradient(92% 72% at 10% 4%,
+      color-mix(in srgb, var(--c-accent) 32%, transparent) 0%, transparent 58%),
+    radial-gradient(68% 60% at 98% 104%,
+      color-mix(in srgb, var(--c-accent) 18%, transparent) 0%, transparent 56%),
+    linear-gradient(158deg,
+      color-mix(in srgb, var(--c-accent) 10%, transparent) 0%,
+      transparent 42%),
+    radial-gradient(130% 108% at 45% 42%,
+      transparent 32%, color-mix(in srgb, #000 58%, transparent) 100%);
+  color: color-mix(in srgb, var(--c-bg) 82%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--c-bg) 12%, transparent);
+}
+
+/* Contrast on the dark ground. Each value is measured against the LIGHTEST
+   point of the background (under the top wash), not the base ink, so nothing
+   dims where the light falls. */
+.hero--dark h1 { color: var(--c-bg); }
+.hero--dark .mono { color: color-mix(in srgb, var(--c-bg) 76%, transparent); }
+.hero--dark .hero__sub { color: color-mix(in srgb, var(--c-bg) 84%, transparent); }
+/* 40%, not 20%: these rules ARE the structure of the hero — they draw the
+   three bands — so they have to be seen, not merely present. At 20% they
+   measured 1.77:1 against the lit part of the ground and effectively vanished;
+   40% clears 3:1 across the whole gradient. */
+.hero--dark .hero__top,
+.hero--dark .hero__materials { border-color: color-mix(in srgb, var(--c-bg) 40%, transparent); }
+.hero--dark .hero__materials a { color: color-mix(in srgb, var(--c-bg) 78%, transparent); }
+.hero--dark .hero__materials a:hover { color: var(--c-gold); }
+.hero--dark .hero__materials a:focus-visible { outline-color: var(--c-gold); }
+
+/* ==================================================== FACE CARD THEME ==
+   Face cards now live on cream (the home collection strip moved off the dark
+   band), so their defaults are light and the dark section overrides them. */
+.face-card__name { color: var(--c-heading); }
+.face-card__meta { color: var(--c-body); }
+.section--dark .face-card__name { color: var(--c-on-dark); }
+.section--dark .face-card__meta { color: var(--c-on-dark-mut); }
+@media (hover: hover) {
+  .face-card:hover .face-card__name { color: var(--c-accent-ink); }
+  .section--dark .face-card:hover .face-card__name { color: var(--c-accent-dark); }
+}
+
+/* ==================================================== STONE FAMILIES ==
+   The catalogue, led by material. Definition on one side, stones on the
+   other, sides ALTERNATING down the page — the "definition on right and left"
+   the client asked for. */
+.fams { display: grid; }
+.fam {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(2rem, 5vw, 4.5rem);
+  align-items: center;
+  padding-block: clamp(2.5rem, 6vw, 4.5rem);
+  border-top: 1px solid var(--c-hairline);
+}
+.fam:first-child { border-top: 0; padding-top: 0; }
+
+/* Every second family flips: stones left, definition right. */
+.fam[data-flip='true'] .fam__def { order: 2; }
+.fam[data-flip='true'] .fam__grid { order: 1; }
+
+.fam__def h2 { margin-bottom: var(--s-4); }
+.fam__blurb { font-size: var(--t-lg); line-height: 1.55; }
+
+.fam__spec { margin-top: var(--s-6); display: grid; gap: var(--s-3); }
+.fam__spec-row {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: var(--s-3);
+  align-items: baseline;
+  padding-top: var(--s-3);
+  border-top: 1px solid var(--c-hairline);
+}
+.fam__spec-row dd { font-size: var(--t-sm); color: var(--c-heading); }
+.fam__cta { margin-top: var(--s-6); }
+
+/* Representative stones — a small plate of faces, no counts. */
+.fam__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: var(--s-4);
+}
+.fam__stone { scroll-margin-top: 110px; }
+.fam__stone-face {
+  position: relative;
+  display: block;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+}
+.fam__stone figcaption { margin-top: var(--s-2); display: grid; gap: 1px; }
+.fam__stone-name {
+  font-family: var(--f-display);
+  font-variation-settings: 'wdth' 102;
+  font-size: var(--t-sm);
+  font-weight: 500;
+  color: var(--c-heading);
+}
+@media (hover: hover) {
+  .fam__stone .stone-tex { transition: transform 1200ms var(--ease-out); }
+  .fam__stone:hover .stone-tex { transform: scale(1.055); }
+}
+
+@media (max-width: 860px) {
+  .fam { grid-template-columns: 1fr; gap: var(--s-8); }
+  /* On one column the flip must be cancelled, or every second family would
+     show its stones before you know what material you are looking at. */
+  .fam[data-flip='true'] .fam__def { order: 0; }
+  .fam[data-flip='true'] .fam__grid { order: 0; }
+  .fam__spec-row { grid-template-columns: 1fr; gap: var(--s-1); }
+}
+
+/* ============================================================= REELS ==
+   Instagram reel wall. 9:16 cards — the shape reels actually are, so the
+   layout is already right when real thumbnails replace the placeholders. */
+.reels {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
+  gap: var(--s-6);
+}
+.reel { display: block; }
+.reel__face {
+  position: relative;
+  display: block;
+  aspect-ratio: 9 / 16;
+  overflow: hidden;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+}
+.reel__play {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px; height: 46px;
+  display: grid; place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--c-footer) 62%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  color: #fff;
+  padding-left: 2px;                 /* optical centring of the triangle */
+  transition: transform var(--d-base) var(--ease-out);
+}
+.reel__cap { display: grid; gap: 2px; margin-top: var(--s-3); }
+.reel__text {
+  font-size: var(--t-sm);
+  color: var(--c-heading);
+  line-height: 1.45;
+}
+@media (hover: hover) {
+  .reel .stone-tex { transition: transform 1200ms var(--ease-out); }
+  .reel:hover .stone-tex { transform: scale(1.06); }
+  .reel:hover .reel__play { transform: translate(-50%, -50%) scale(1.08); }
+}

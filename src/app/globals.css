@@ -37,6 +37,24 @@
   --c-accent-ink:  #836241;
   --c-accent-dark: #A87F55;
 
+  /* ---- Dark surfaces -----------------------------------------------
+     A flat neutral near-black next to a warm cream site reads cold and
+     disconnected — the two halves look like they came from different brands.
+     --c-ink is the SRS footer black warmed toward the SRS accent, so the dark
+     hero belongs to the same palette as everything else: it reads like wet
+     basalt rather than a black box. Derived with color-mix, so it cannot
+     drift away from the two brand values it is built from. */
+  --c-ink:       color-mix(in srgb, var(--c-footer) 90%, var(--c-accent));
+  --c-ink-deep:  color-mix(in srgb, var(--c-footer) 96%, var(--c-accent));
+
+  /* Accent for DARK backgrounds. --c-accent-dark clears AA but sits dim on a
+     near-black; this lifted, sandier tone carries the same hue with far more
+     presence — the gold you see on a polished stone edge under light.
+     66/34, not 70/30: measured against the LIGHTEST point of the hero (under
+     the warm top wash, not the base ink), 70% lands at 4.44:1 — just under AA.
+     At 66% it clears 4.5:1 everywhere on the dark ground. */
+  --c-gold: color-mix(in srgb, var(--c-accent) 66%, var(--c-bg));
+
   /* ---- Derived: surfaces ------------------------------------------ */
   --c-surface:     #FFFFFF;
   --c-sunk:        color-mix(in srgb, var(--c-border) 22%, var(--c-bg));
@@ -51,6 +69,12 @@
      Inline SVG data URI, so it costs one tiny string, no network request, and
      tiles seamlessly (stitchTiles). Deliberately NOT animated. */
   --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.86' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)' opacity='0.042'/%3E%3C/svg%3E");
+
+  /* Dark surfaces swallow grain: 4% noise over near-black is invisible, so the
+     dark hero was rendering as a flat fill. This is the same fractal noise at
+     ~13% with a coarser frequency — on a dark ground that reads as the tooth
+     of honed stone rather than as visible speckle. */
+  --grain-dark: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='gd'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.62' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23gd)' opacity='0.13'/%3E%3C/svg%3E");
   --c-on-dark:     #F7F5F2;
   --c-on-dark-mut: color-mix(in srgb, var(--c-bg) 62%, transparent);
   /* WhatsApp's own dark green (#075E54) rather than their light green
@@ -147,7 +171,13 @@ body {
   font-variation-settings: 'opsz' 16;   /* body optical size, not display shrunk */
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  overflow-x: hidden;              /* belt-and-braces against horizontal scroll */
+  /* CLIP, not hidden. `overflow-x: hidden` makes the body a scroll container,
+     and a `position: sticky` element inside a scroll container sticks to THAT
+     container's scrollport — which never scrolls, because the viewport does.
+     The result was a sticky nav that simply scrolled away off the top of the
+     page. `clip` gives the same protection against horizontal overflow without
+     establishing a scroll container, so sticky keeps working. */
+  overflow-x: clip;
 }
 
 img, svg, video { display: block; max-width: 100%; }
@@ -398,10 +428,19 @@ p { max-width: 66ch; }            /* 60–75 char measure */
 
 /* The exception: the h1 is cut, not set. A single saw pass, once per visit,
    on the one element that has no shadow to shear. This is the site's loudest
-   motion and it happens exactly once. */
-.cut {
-  clip-path: inset(0 0 100% 0);
-  animation: cut-pass 900ms var(--ease-out) 120ms both;
+   motion and it happens exactly once.
+
+   The clip lives INSIDE the no-preference query on purpose. It used to be the
+   element's base state, which meant a headline clipped to nothing whenever the
+   animation did not actually run — reduced-motion, an old engine, or simply a
+   renderer that never advances the timeline. The most important text on the
+   site must never depend on an animation firing to become visible, so the
+   default is now plain visible type and the cut is layered on top. */
+@media (prefers-reduced-motion: no-preference) {
+  .cut {
+    clip-path: inset(0 0 100% 0);
+    animation: cut-pass 900ms var(--ease-out) 120ms both;
+  }
 }
 @keyframes cut-pass {
   from { clip-path: inset(0 0 100% 0); }
@@ -421,167 +460,6 @@ p { max-width: 66ch; }            /* 60–75 char measure */
 }
 .page-in { animation: page-in 180ms var(--ease-out) both; }
 
-/* ======================================================= THE RACK =====
-   The signature. 8Slabs, made literal: eight slabs standing on edge in a
-   yard rack, which is how slabs are actually stored — never stacked flat.
-   Hovering pulls one forward, the way a buyer pulls a slab out to read the
-   face before committing to a container.
-
-   Desktop: eight vertical panels (the rack).
-   Mobile:  the same eight, reflowed to horizontal bands (the strata), each
-            tall enough to be a legal touch target. Not a hack — both are
-            true readings of stone, and 8 vertical panels at 375px would be
-            40px wide, under the 44px minimum.
-   ===================================================================== */
-.rack {
-  display: flex;
-  gap: 4px;
-  /* Tall on purpose — full slabs read as premium, and it is the taller of the
-     two hero columns so its height sets the hero's height. Tied to svh (max
-     700px) so it fills most of one screen without ever forcing a scroll:
-     72svh still leaves room for the nav and the hero's own padding. */
-  height: clamp(440px, 72svh, 700px);
-  padding: var(--s-3);
-  background: var(--c-sunk);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-lg);
-  perspective: 1400px;
-}
-
-.rack__slab {
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  transform-origin: bottom center;
-  transition:
-    transform var(--d-slow) var(--ease-out),
-    flex-grow var(--d-slow) var(--ease-out),
-    box-shadow var(--d-slow) var(--ease-out);
-  /* Entrance: each slab is set into the rack in turn. */
-  animation: slab-set var(--d-slow) var(--ease-out) both;
-  animation-delay: var(--slab-delay, 0ms);
-}
-
-@keyframes slab-set {
-  from { opacity: 0; transform: translate3d(0, 14%, 0) scaleY(0.94); }
-  to   { opacity: 1; transform: none; }
-}
-
-/* ---- Scroll-linked depth (progressive enhancement) -----------------
-   Each slab's FACE drifts at a slightly different rate as the rack passes
-   through the viewport, so the eight read as objects at different distances
-   rather than eight flat rectangles. --slab-i is signed and centred (-3.5 to
-   +3.5), so the middle of the rack sits still and the outer slabs drift in
-   opposite directions — the row breathes from its centre instead of sliding
-   as one block. The faces are pre-scaled 1.06 so drift never exposes an edge.
-
-   Runs entirely on the compositor via animation-timeline: no scroll listener,
-   no JS, nothing on the main thread. Browsers without scroll-driven
-   animations simply get a still rack, which is a perfectly good rack —
-   nothing is conditional on it. The animation is on __face, not __slab,
-   so it cannot collide with the slab-set entrance above. */
-@supports (animation-timeline: view()) {
-  @media (prefers-reduced-motion: no-preference) {
-    .rack__face {
-      animation: face-drift linear both;
-      animation-timeline: view();
-      animation-range: entry 0% exit 100%;
-    }
-    @keyframes face-drift {
-      from { transform: translate3d(0, calc(var(--slab-i, 0) * -0.55%), 0) scale(1.06); }
-      to   { transform: translate3d(0, calc(var(--slab-i, 0) *  0.55%), 0) scale(1.06); }
-    }
-  }
-}
-
-.rack__link {
-  position: absolute;
-  inset: 0;
-  display: block;
-  overflow: hidden;
-  border-radius: 1px;
-}
-
-/* Pull-to-inspect. flex-grow is animated rather than width so the neighbouring
-   slabs give way rather than the whole row reflowing. Focus gets the identical
-   treatment via :has() — a keyboard user walks the rack exactly like a mouse
-   user does, rather than getting a lesser version of the interaction. */
-@media (hover: hover) and (min-width: 768px) {
-  .rack__slab:hover,
-  .rack__slab:has(.rack__link:focus-visible) {
-    flex-grow: 1.9;
-    transform: translate3d(0, -10px, 0);
-    box-shadow: var(--e-3);
-    z-index: var(--z-raised);
-  }
-}
-.rack__slab:has(.rack__link:focus-visible) { z-index: var(--z-raised); }
-
-.rack__face { position: absolute; inset: 0; }
-
-/* The label rides at the foot of each slab, rotated to read up the edge —
-   the way a slab is actually chalked in a yard. */
-.rack__label {
-  position: absolute;
-  left: 0; right: 0; bottom: 0;
-  padding: var(--s-3) var(--s-2);
-  background: linear-gradient(to top, rgba(31,31,31,0.86), rgba(31,31,31,0));
-  color: #fff;
-  font-family: var(--f-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  text-align: center;
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  inline-size: 100%;
-  min-block-size: 8.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--s-3);
-}
-
-.rack__name { white-space: nowrap; }
-
-/* The category is the detail you get for leaning in — it appears only once a
-   slab is pulled. On touch there is no hover, so it is simply always shown. */
-.rack__meta {
-  opacity: 0;
-  color: var(--c-border);
-  transition: opacity var(--d-base) var(--ease-out);
-}
-@media (hover: hover) and (min-width: 768px) {
-  .rack__slab:hover .rack__meta,
-  .rack__slab:has(.rack__link:focus-visible) .rack__meta { opacity: 1; }
-}
-
-/* Mobile: rack → strata */
-@media (max-width: 767px) {
-  .rack {
-    flex-direction: column;
-    height: auto;
-    gap: 2px;
-    perspective: none;
-  }
-  .rack__slab {
-    flex: none;
-    height: 56px;                 /* comfortably over the 44px touch minimum */
-    transform-origin: center;
-  }
-  .rack__label {
-    writing-mode: horizontal-tb;
-    transform: none;
-    min-block-size: 0;
-    flex-direction: row;
-    gap: var(--s-2);
-    justify-content: flex-start;
-    padding-inline: var(--s-4);
-    background: linear-gradient(to right, rgba(31,31,31,0.88), rgba(31,31,31,0.2));
-  }
-  .rack__meta { opacity: 1; }
-}
-
 /* ---------------------------------------------------- Reduced motion --
    Honour the OS setting: no travel, no staggered entrances, no smooth
    scroll. Content still arrives — it just arrives immediately. */
@@ -594,8 +472,7 @@ p { max-width: 66ch; }            /* 60–75 char measure */
     scroll-behavior: auto !important;
   }
   .reveal { opacity: 1; transform: none; }
-  .rack__meta { opacity: 1; transform: none; }
   /* The scroll cue is a looping animation with no static purpose — remove it
      entirely rather than freezing it mid-pulse. */
-  .hero::after { display: none; }
+  .hero--cue::after { display: none; }
 }

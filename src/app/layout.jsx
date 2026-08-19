@@ -34,7 +34,10 @@ const newsreader = Newsreader({
 
 const plexMono = IBM_Plex_Mono({
   subsets: ['latin'],
-  weight: ['400', '500'],
+  /* 700 is loaded so the nav CTA can actually be bold. Without the real weight
+     the browser synthesises it by smearing the 500 — which on a mono face at
+     small size turns to mud. */
+  weight: ['400', '500', '700'],
   variable: '--font-mono',
   display: 'swap',
 })

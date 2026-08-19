@@ -98,15 +98,8 @@ export default function Contact() {
                 </span>
               </a>
 
-              <div className="contact-row">
-                <span className="contact-row__icon"><Icon name="pin" /></span>
-                <span>
-                  <span className="contact-row__k">Office</span>
-                  <address className="contact-row__v" style={{ fontStyle: 'normal', fontWeight: 400 }}>
-                    {site.address.line1}<br />{site.address.line2}
-                  </address>
-                </span>
-              </div>
+              {/* Physical address removed per client feedback ("Lets just give
+                  watsapp and no address"). Still in src/data/site.js if needed. */}
             </div>
 
             <a

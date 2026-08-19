@@ -2,13 +2,16 @@
  * Business + contact details. Single source of truth — every page reads from
  * here, so changing a phone number is a one-line edit.
  *
- * All values below come from the client SRS §2. Nothing here is invented.
+ * Values come from the client SRS §2 and the client's written feedback.
+ * Anything not yet supplied is marked with a TODO(client) and an
+ * `isPlaceholder` flag — nothing here is silently invented.
  */
 
 export const site = {
   brand: '8Slabs',
   legalName: 'Simant Vijai',
-  tagline: 'Indian Natural Stone, Sourced and Shipped',
+  /* From the client's own home-page copy. */
+  tagline: 'Sourced with Experience, Delivered with Confidence',
   established: 2026,
 
   /* TODO(client): no domain is registered yet (SRS §9 = "N"). Point this at the
@@ -16,19 +19,39 @@ export const site = {
      OpenGraph tags that render WhatsApp / LinkedIn link previews. */
   url: 'https://8slabs.com',
 
-  email: 'simantvijai@gmail.com',
+  /* TODO(client): PLACEHOLDER business email.
+     Client feedback: "Email we will make of business and not use the personal
+     one." The personal address (simantvijai@gmail.com) has been removed from
+     the site accordingly. Replace the line below with the real business
+     mailbox the moment it exists — it is not live yet, so mail sent here will
+     bounce. */
+  email: 'hello@8slabs.com',
+  emailIsPlaceholder: true,
+
   phone: '+91 85279 44844',
   phoneRaw: '918527944844',
   whatsapp: '918527944844',
 
+  /* Kept for records only — NOT rendered anywhere. Client feedback:
+     "Lets just give watsapp and no address". Removing it from the data
+     entirely would mean retyping it if they change their mind. */
   address: {
     line1: '4H44 Indira Gandhi Nagar, Jagatpura',
     line2: 'Jaipur, Rajasthan, India 302017',
     country: 'India',
   },
 
+  /* TODO(client): real Instagram handle + URL needed. The Socials page uses
+     placeholder reels until the account is supplied — see src/data/socials.js. */
+  instagram: {
+    handle: '@8slabs',
+    url: null,
+    isPlaceholder: true,
+  },
+
+  /* The client's own words, from their home-page copy. */
   description:
-    'Sandstone, limestone, quartzite, slate, marble and granite sourced from North India’s stone belt and shipped to wholesalers, distributors, architects and turnkey projects worldwide. Quote-only pricing, one container minimum.',
+    'Sandstone, limestone, quartzite, slate, marble and granite — sourced from India’s leading stone regions, carefully inspected and shipped with a decade of hands-on industry experience.',
 
   /* The client's own three differentiators, SRS §3, verbatim in substance. */
   values: [

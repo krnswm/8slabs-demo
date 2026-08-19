@@ -25,7 +25,7 @@ export default function Footer() {
             <ul className="footer__list">
               <li><Link href="/about/">About</Link></li>
               <li><Link href="/catalogue/">Catalogue</Link></li>
-              <li><Link href="/journal/">Journal</Link></li>
+              <li><Link href="/socials/">Socials</Link></li>
               <li><Link href="/contact/">Contact</Link></li>
             </ul>
           </div>
@@ -51,11 +51,8 @@ export default function Footer() {
               </li>
               <li><a href={telLink}>Call {site.phone}</a></li>
               <li><a href={mailLink}>{site.email}</a></li>
-              <li>
-                <address style={{ fontStyle: 'normal', fontSize: 'var(--t-sm)', marginTop: 'var(--s-3)', lineHeight: 1.7 }}>
-                  {site.address.line1}<br />{site.address.line2}
-                </address>
-              </li>
+              {/* Physical address removed per client feedback ("no address").
+                  It is still in src/data/site.js if they change their mind. */}
             </ul>
           </div>
         </div>

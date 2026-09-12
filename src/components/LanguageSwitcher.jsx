@@ -74,6 +74,14 @@ export default function LanguageSwitcher({ locale = DEFAULT_LOCALE, label = 'Lan
           <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18" />
         </svg>
         <span className="lang__code">{current.code.toUpperCase()}</span>
+        {/* Phone-only. At the head of the mobile menu this row is the control
+            a buyer who cannot read the nav reaches for first, so it names the
+            language in full rather than as a two-letter code. */}
+        <span className="lang__now" lang={current.code} dir={current.dir}>{current.endonym}</span>
+        <svg className="lang__chev" width="12" height="12" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" strokeWidth="2.2" aria-hidden="true" focusable="false">
+          <path d="M6 9l6 6 6-6" />
+        </svg>
       </button>
 
       <ul className="lang__menu" data-open={open}>

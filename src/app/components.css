@@ -319,6 +319,15 @@ main:focus { outline: none; }
        NO padding and its links ran edge to edge over the rounded corners. */
     padding: var(--s-2) var(--s-6) var(--s-6);
     border-radius: 20px;
+    /* Eight languages plus four links plus the CTA is taller than a phone once
+       the switcher is expanded — and taller still in Arabic, whose line boxes
+       run deeper. Cap it against the viewport and let it scroll rather than
+       letting the Enquire button fall off the bottom. svh, not vh, so the
+       address bar collapsing does not change the answer. `contain` stops the
+       scroll chaining into the page behind the menu. */
+    max-height: calc(100svh - var(--nav-h) - var(--s-6));
+    overflow-y: auto;
+    overscroll-behavior: contain;
     /* Solid, not translucent. At 92% the hero headline read straight through
        and collided with the menu labels; even at 97% a ~6% luminance ghost of
        it remained. The glass is the pill's job — a menu you are reading has to
@@ -362,6 +371,13 @@ main:focus { outline: none; }
   .nav[data-theme="dark"] .nav__cta::before { background: var(--c-accent-ink); }
   .nav[data-theme="dark"] .nav__cta:hover,
   .nav[data-theme="dark"] .nav__cta:focus-visible { color: var(--c-bg); }
+  /* Same trap, one element later. Moving the switcher into this cream panel
+     brought `.nav[data-theme="dark"] .lang__btn { color: var(--c-bg) }` with
+     it — a rule written for the pill floating over the dark hero. On the panel
+     it measured 1.00:1: the globe, the language name and the chevron were all
+     there, all invisible. */
+  .nav[data-theme="dark"] .nav__links .lang__btn { color: var(--c-heading); }
+  .nav[data-theme="dark"] .nav__links .lang__btn:hover { color: var(--c-accent-ink); }
 }
 
 /* ============================================================== HERO ==
@@ -1159,12 +1175,65 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
 .lang__menu a[lang='zh'] { font-family: var(--font-cjk), system-ui, sans-serif; }
 .lang__menu a[lang='ru'] { font-family: var(--font-cyrillic), Georgia, serif; }
 .lang__endonym { font-size: var(--t-sm); }
+/* Phone-only affordances; the desktop pill keeps the compact globe + code. */
+.lang__now,
+.lang__chev { display: none; }
 
 @media (max-width: 900px) {
-  /* Inside the dropdown the switcher is a full-width row like the links. */
-  .lang { width: 100%; }
-  .lang__btn { width: 100%; justify-content: flex-start; padding-block: var(--s-3); }
-  .lang__menu { position: static; min-width: 0; box-shadow: none; border: 0; padding: 0; }
-  .lang__menu[data-open='true'] { transform: none; }
-  .lang__menu a { padding-inline: 0; }
+  /* The switcher leads the menu rather than trailing it. A buyer who cannot
+     read the navigation needs the language control BEFORE the links, not
+     after four labels they can't parse. `order` does this without rendering
+     the control twice, which would put two copies of the same interactive
+     element — and two identical menus — on the page. */
+  .lang { order: -1; }
+
+  /* `display: inline-flex` made the button and the list siblings in a ROW:
+     the button took width:100% and the list collapsed to min-content, about
+     57px, which is what shredded the endonyms ("Tiếng Việt" over two lines)
+     and pinned them to the right. They have to stack. */
+  .lang {
+    display: block;
+    width: 100%;
+    margin-bottom: var(--s-2);
+    border-bottom: 1px solid var(--c-hairline);
+    padding-bottom: var(--s-2);
+  }
+  .lang__btn {
+    width: 100%;
+    justify-content: flex-start;
+    gap: var(--s-3);
+    padding-block: var(--s-3);
+    font-size: var(--t-lg);
+  }
+  /* The two-letter code is redundant once the language is spelled out. */
+  .lang__code { display: none; }
+  .lang__now { display: inline; }
+  .lang__chev {
+    display: inline;
+    margin-inline-start: auto;
+    transition: transform var(--d-base) var(--ease-out);
+  }
+  .lang__btn[aria-expanded='true'] .lang__chev { transform: rotate(180deg); }
+
+  /* `display: none`, not just hidden. The desktop menu is absolutely
+     positioned, so visibility:hidden costs no space; once it goes static for
+     the phone it reserves its full box while closed — which pushed the nav
+     links 424px down the panel and shoved the Enquire button off screen. */
+  .lang__menu {
+    position: static;
+    display: none;
+    min-width: 0;
+    box-shadow: none;
+    border: 0;
+    padding: 0;
+  }
+  .lang__menu[data-open='true'] { display: block; transform: none; }
+  /* Full-width rows, so every endonym has the whole panel to sit on. */
+  .lang__menu a { width: 100%; padding-inline: var(--s-3); }
+  .lang__menu a[aria-current='true']::after {
+    content: '';
+    margin-inline-start: auto;
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--c-accent-ink);
+  }
 }

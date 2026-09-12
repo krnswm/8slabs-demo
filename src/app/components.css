@@ -487,13 +487,20 @@ main:focus { outline: none; }
      scroll to reach the material rail. Leaning on svh means the headline gives
      way on short screens and only grows on tall ones, which is the axis that
      actually constrains this layout. */
-  font-size: clamp(1.9rem, 0.4rem + 1.5vw + 2.4svh, 4.2rem);
+  font-size: clamp(1.55rem, 0.4rem + 1.5vw + 2.4svh, 4.2rem);
   line-height: 0.94;
   letter-spacing: -0.038em;
   margin: 0;
   text-shadow: 0 1px 24px rgba(0, 0, 0, 0.4);   /* seats the type on the photo */
 }
-.hero__sub { font-size: var(--t-base); max-width: 46ch; }
+.hero__sub {
+  /* Height-aware like the headline. Fixed at --t-base it held six lines on a
+     568px screen while the headline shrank around it, which is why the hero
+     overflowed by 170px there and not at all on a tall phone. */
+  font-size: clamp(0.875rem, 0.62rem + 0.35vw + 0.55svh, 1.0625rem);
+  line-height: 1.5;
+  max-width: 46ch;
+}
 .hero__cta { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-2); }
 
 /* The range, as the hero's base. */
@@ -905,7 +912,7 @@ main:focus { outline: none; }
   border: 1px solid var(--c-border); border-radius: var(--radius);
   color: var(--c-accent-ink);
 }
-.contact-row__k { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-body); margin-bottom: 2px; }
+.contact-row__k { font-family: var(--f-mono); font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-body); margin-bottom: 2px; }
 .contact-row__v { color: var(--c-heading); font-weight: 500; }
 a.contact-row__v { transition: color var(--d-base) var(--ease-out); }
 a.contact-row__v:hover { color: var(--c-accent-ink); }
@@ -1318,4 +1325,118 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+
+/* =================================================  TOUCH & SMALL SCREENS  ==
+   Everything below is about the hand, not the layout — the audit found no
+   horizontal overflow at any width from 320 to 1920, so the structure was
+   already sound. What it did find was type too small to read and targets too
+   small to hit, and only on the widths where a finger is the pointer.
+
+   860px, not a hover query: a touch laptop should not lose the comfortable
+   desktop nav, and an iPad at 768 genuinely needs the bigger targets. Width is
+   the honest proxy here. */
+@media (max-width: 860px) {
+  /* 44px is the floor a fingertip reliably hits. These were 15px tall: the
+     link text box with no padding at all, in a column of five. Padding, not
+     min-height, so the words stay where they are and only the target grows. */
+  .footer__grid li a {
+    display: inline-block;
+    padding-block: 0.86rem;
+    line-height: 1.15;
+  }
+  /* "Read the full story" and friends: inline text links in running copy,
+     29px tall because a line of text is 29px tall. */
+  .link-u {
+    display: inline-block;
+    padding-block: 0.5rem;
+  }
+  .footer__grid ul { display: grid; }
+
+  /* The wordmark is a link to home in both the nav and the footer, and was
+     35px tall in both. */
+  .brand { min-height: 44px; align-items: center; }
+
+  /* The material rail across the bottom of the home hero: six links at 27px.
+     They are the only navigation into the catalogue families from the hero. */
+  .hero__materials a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  /* 9px is below what most people can read at arm's length, and this label is
+     a legal-ish disclaimer — "Placeholder, not a photograph" — so it is
+     exactly the text that must not be dismissible as fine print. */
+  .photo-flag { font-size: 0.75rem; }
+  /* The WhatsApp / Phone / Email labels on Contact — the one page where a
+     buyer is squinting for a number to act on. */
+  .contact-row__k { font-size: 0.75rem; }
+}
+
+
+/* ===================================================  SHORT VIEWPORTS  ==
+   Phones are not only narrow, they are short, and the two do not move
+   together: the home hero fitted 390x844 exactly while overflowing 375x667 by
+   22px and 320x568 by 170px. Width-based media queries cannot see that.
+
+   Everything here buys vertical space without touching the design at normal
+   heights — nothing below applies to a 844px phone. */
+@media (max-height: 700px) {
+  .hero__inner { gap: var(--s-3); }
+  .hero__body { gap: var(--s-3); }
+  .hero__cta { gap: var(--s-2); margin-top: 0; }
+  .hero__cta .btn { padding-block: 0.7rem; }
+  .hero__materials { padding-top: var(--s-3); }
+  .hero__top { padding-bottom: var(--s-2); }
+  /* Two full-width stacked buttons cost 110px on a 568px screen. Side by side
+     they cost 55, and at this height that is the difference between seeing the
+     material rail and not. */
+  .hero__cta .btn { flex: 1 1 auto; min-width: 0; }
+}
+
+/* The oldest phones still in use — iPhone SE 1st gen and budget Android at
+   320x568. Five pixels of overflow is still overflow: it hides the bottom rule
+   of the material rail and makes the hero look cut rather than composed. */
+@media (max-height: 600px) {
+  .hero__inner { gap: var(--s-2); }
+  .hero__materials { padding-top: var(--s-2); }
+  .hero__materials ul { gap: var(--s-2) var(--s-4); }
+  .hero__sub { line-height: 1.42; }
+}
+
+/* Interior heroes on short screens. The home hero and these are sized
+   independently, so fixing one left the other overflowing 320x568 by up to
+   89px — the catalogue worst, because its lead paragraph is the longest. */
+@media (max-height: 700px) {
+  .phero__inner { gap: var(--s-3); }
+  .phero h1 { margin-block: var(--s-2); }
+  .phero__lead .lead { font-size: clamp(0.875rem, 0.7rem + 0.5svh, 1.0625rem); line-height: 1.45; }
+  .phero__top { padding-bottom: var(--s-2); }
+  .phero__foot { padding-top: var(--s-2); }
+}
+@media (max-height: 600px) {
+  .phero__inner { gap: var(--s-2); }
+  .phero h1 { line-height: 1.02; }
+}
+
+/* The floating WhatsApp button is fixed to the bottom-right corner, so it sits
+   OVER whatever the page puts there. On a 320px screen the material rail's
+   last item ("Slate") ended up underneath it — tappable-looking, and not
+   tappable. Reserve the corner on the narrowest screens rather than moving the
+   button, which is where people expect to find it. */
+@media (max-width: 480px) {
+  /* 56px button + 16px inset + a little air. Logical property, so it reserves
+     the right edge in English and the left in Arabic, where the button
+     mirrors. */
+  .hero__materials ul { padding-inline-end: 4.75rem; }
+}
+@media (max-width: 360px) {
+  /* Reserving that corner costs the rail a line at 320px, and a third line
+     pushed the hero 40px past the viewport. Buying it back from the type
+     rather than from the clearance: the rail is six short words and reads
+     perfectly well a point smaller. */
+  .hero__materials a { letter-spacing: 0.05em; }
+  .hero__materials ul { gap: var(--s-2) var(--s-3); }
 }

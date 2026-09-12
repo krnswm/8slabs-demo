@@ -32,8 +32,6 @@ export const PREFIXED_LOCALES = LOCALE_CODES.filter((c) => c !== DEFAULT_LOCALE)
 export const getLocale = (code) =>
   LOCALES.find((l) => l.code === code) || LOCALES[0]
 
-export const isRtl = (code) => getLocale(code).dir === 'rtl'
-
 /** Build a path for a locale: ('/about/', 'es') -> '/es/about/' */
 export function localePath(path, locale) {
   const clean = path.startsWith('/') ? path : `/${path}`

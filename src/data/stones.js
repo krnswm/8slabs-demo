@@ -8,15 +8,6 @@
  * quote-only and should not be shown publicly.
  */
 
-export const categories = [
-  'All',
-  'Sandstone',
-  'Limestone',
-  'Quartzite',
-  'Slate',
-  'Marble',
-  'Granite',
-]
 
 /**
  * The eight stones shown in the hero rack, in rack order.

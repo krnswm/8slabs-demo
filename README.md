@@ -18,6 +18,18 @@ npm run build      # static site → /out
 npm run preview    # http://localhost:4321 — the BUILT site from /out
 ```
 
+Checks. All except `i18n:check` need Chrome and a server already running
+(`npm run dev` for the first three, `npm run preview` for `locale:check`):
+
+```bash
+npm run i18n:check       # translation key parity across the 8 locales
+npm run locale:check     # language auto-routing cannot trap a visitor
+npm run hero:check       # home hero contrast, real pixels, text hidden
+npm run phero:check      # interior hero contrast — inverted test, dark type
+npm run nav:check        # navbar contrast over both hero themes
+npm run contrast:check   # site-wide contrast sweep
+```
+
 `npm run build` produces plain static files in `/out`. Deploy that folder to
 Netlify, Vercel, Cloudflare Pages, or any cPanel/Apache host. No server, no
 Node runtime, no database.

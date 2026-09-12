@@ -687,7 +687,6 @@ main:focus { outline: none; }
    At these values the binding element is the lead paragraph at roughly
    5.6-6.1:1, with the 4.5 floor still clear. */
 .phero[data-photo='texture-black-veined'] .phero__bg img { opacity: 0.80; }
-.phero[data-photo='samples-linen']        .phero__bg img { opacity: 0.70; }
 .phero[data-photo='setts-stacked']        .phero__bg img { opacity: 0.80; }
 .phero[data-photo='texture-fantasy-brown'] .phero__bg img { opacity: 0.90; }
 .phero[data-photo='granite-outcrop']      .phero__bg img { opacity: 0.88; }
@@ -695,7 +694,6 @@ main:focus { outline: none; }
 /* Framing. Each photograph has a different subject in a different place, and
    `cover` on a full-viewport hero crops hard, so each gets its own anchor. */
 .phero[data-photo='texture-black-veined'] .phero__bg img { object-position: 60% 50%; }
-.phero[data-photo='samples-linen']        .phero__bg img { object-position: 72% 40%; }
 .phero[data-photo='setts-stacked']        .phero__bg img { object-position: 50% 45%; }
 .phero[data-photo='texture-fantasy-brown'] .phero__bg img { object-position: 65% 45%; }
 .phero[data-photo='granite-outcrop']      .phero__bg img { object-position: 55% 60%; }
@@ -808,26 +806,7 @@ main:focus { outline: none; }
   .phero__lead { max-width: 100%; }
   .phero__foot { gap: var(--s-4) var(--s-6); }
   .phero__fact dd { font-size: var(--t-lg); }
-}
-
-/* ---- Scroll cue ----
-   NOT used on the home hero any more: it is pinned bottom-centre, and the
-   material rail now occupies that exact strip — the cue rendered as a stray
-   1px tick sitting between LIMESTONE and SLATE. The rail already tells you
-   the page continues, so the cue would be redundant even if it cleared.
-   Kept here for any future full-bleed hero that has an empty base. */
-.hero--cue::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: var(--s-6);
-  width: 1px;
-  height: 42px;
-  background: linear-gradient(var(--c-accent), transparent);
-  transform-origin: top;
-  animation: scroll-cue 2.4s var(--ease-out) infinite;
-}
-@keyframes scroll-cue {
+}@keyframes scroll-cue {
   0%   { transform: scaleY(0); opacity: 0; }
   30%  { transform: scaleY(1); opacity: 1; }
   70%  { transform: scaleY(1); opacity: 1; }
@@ -902,22 +881,7 @@ main:focus { outline: none; }
   .face-card .stone-tex { transition: transform 1200ms var(--ease-out); }
   .face-card:hover .stone-tex { transform: scale(1.055); }
   .face-card:hover .face-card__name { color: var(--c-accent-dark); }
-}
-
-/* ======================================================== STONE CARD == */
-.stone-card { display: flex; flex-direction: column; scroll-margin-top: 100px; }
-.stone-card__face { aspect-ratio: 4 / 3; position: relative; }
-.stone-card__body { display: flex; flex-direction: column; flex: 1; padding: var(--s-4) var(--s-4) var(--s-6); }
-.stone-card__body h3 { font-size: var(--t-lg); margin: var(--s-3) 0 var(--s-2); }
-.stone-card__blurb { font-size: var(--t-sm); }
-
-/* Specs read as a schedule: mono, label/value, aligned. */
-.spec { display: grid; gap: var(--s-2); margin-top: var(--s-4); padding-top: var(--s-4); border-top: 1px solid var(--c-hairline); }
-.spec__row { display: grid; grid-template-columns: 5.5rem 1fr; gap: var(--s-3); align-items: baseline; }
-.spec__k { font-family: var(--f-mono); font-size: 0.625rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-body); }
-.spec__v { font-size: var(--t-sm); color: var(--c-heading); }
-
-/* Placeholder disclosure. Stays until real photography lands — a buyer must
+}/* Placeholder disclosure. Stays until real photography lands — a buyer must
    never mistake a generated texture for the face of the slab they are buying. */
 .photo-flag {
   position: absolute; left: var(--s-2); top: var(--s-2);
@@ -927,42 +891,6 @@ main:focus { outline: none; }
   font-family: var(--f-mono); font-size: 0.5625rem; letter-spacing: 0.08em; text-transform: uppercase;
   border-radius: 1px;
 }
-
-/* =========================================================== FILTERS == */
-.filters { display: flex; flex-wrap: wrap; gap: var(--s-2); margin-bottom: var(--s-8); }
-.filter {
-  min-height: 44px;
-  padding: var(--s-2) var(--s-4);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius);
-  font-family: var(--f-mono); font-size: var(--t-xs); letter-spacing: 0.06em; text-transform: uppercase;
-  color: var(--c-body);
-  touch-action: manipulation;
-  transition: background-color var(--d-base) var(--ease-out), color var(--d-base) var(--ease-out), border-color var(--d-base) var(--ease-out);
-}
-.filter:hover { border-color: var(--c-accent); color: var(--c-heading); }
-.filter[aria-pressed="true"] { background: var(--c-heading); color: var(--c-bg); border-color: var(--c-heading); }
-.filter__count { opacity: 0.55; margin-left: 0.4em; }
-
-/* ========================================================= POST CARD == */
-.post-card__face { aspect-ratio: 16 / 10; position: relative; }
-/* flex:1 so the body fills the equal-height card and the face stays a fixed
-   ratio — cards in a row line up even when titles/excerpts differ in length. */
-.post-card__body { flex: 1; padding: var(--s-4) var(--s-4) var(--s-6); }
-.post-card__body h3 { font-size: var(--t-lg); margin: var(--s-3) 0 var(--s-2); }
-.post-card__body p { font-size: var(--t-sm); }
-
-/* Honest empty state — used wherever the client has not supplied content yet.
-   An unavailable section explains itself rather than silently disappearing. */
-.empty {
-  padding: var(--s-12) var(--s-6);
-  border: 1px dashed var(--c-border);
-  border-radius: var(--radius-lg);
-  text-align: center;
-}
-.empty h3 { font-size: var(--t-lg); margin-bottom: var(--s-2); }
-.empty p { margin-inline: auto; }
-
 /* =========================================================== CONTACT == */
 .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
 @media (max-width: 850px) { .contact-grid { grid-template-columns: 1fr; } }
@@ -1106,10 +1034,7 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
    Face cards now live on cream (the home collection strip moved off the dark
    band), so their defaults are light and the dark section overrides them. */
 .face-card__name { color: var(--c-heading); }
-.face-card__meta { color: var(--c-body); }
-.section--dark .face-card__name { color: var(--c-on-dark); }
-.section--dark .face-card__meta { color: var(--c-on-dark-mut); }
-@media (hover: hover) {
+.face-card__meta { color: var(--c-body); }@media (hover: hover) {
   .face-card:hover .face-card__name { color: var(--c-accent-ink); }
   .section--dark .face-card:hover .face-card__name { color: var(--c-accent-dark); }
 }

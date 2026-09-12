@@ -23,29 +23,33 @@ const OUT = 'public/photos'
 
 /* [source file, output slug, widths] — widths chosen per role, not uniformly:
    a full-bleed band needs 1600, a card in a grid never exceeds 800. */
+/* Commented-out entries were supplied and imported once, but nothing on the
+   site references them. They stay listed as the record of what the client sent;
+   uncomment to generate one again. Leaving them active refilled public/photos
+   with 28 files no page loads, which all ship to every visitor. */
 const SET = [
   // --- Operations. No product claim attaches to these, which is why they are
   //     the safest and, for a buyer judging whether you are real, the best.
   ['IMG_7047.jpg',    'slab-tagged-yard',      [1600, 1000, 640]],
-  ['image(2).png',    'quarry-face',           [1100, 700]],
+  // ['image(2).png',    'quarry-face',           [1100, 700]],   // held back: not used on the site
   ['image(9).png',    'setts-stacked',         [900, 600]],
   ['image(1).png',    'granite-outcrop',       [1000, 640]],
   // --- Material textures, used at FAMILY level only.
   ['IMG_0627.jpg',    'texture-black-veined',  [1200, 800]],
   ['fantasy brown.JPG','texture-fantasy-brown',[960, 640]],
-  ['1(1).jpg',        'texture-rainforest',    [960, 640]],
-  ['image(7).png',    'texture-green-marble',  [900, 600]],
-  ['image(5).png',    'samples-linen',         [900, 600]],
-  ['image(3).png',    'studio-blocks',         [900, 600]],
+  // ['1(1).jpg',        'texture-rainforest',    [960, 640]],   // held back: not used on the site
+  // ['image(7).png',    'texture-green-marble',  [900, 600]],   // held back: not used on the site
+  // ['image(5).png',    'samples-linen',         [900, 600]],   // held back: not used on the site
+  // ['image(3).png',    'studio-blocks',         [900, 600]],   // held back: not used on the site
   // --- Finished installations.
-  ['2.jpg',           'app-kitchen-dark',      [1000, 640]],
-  ['3.jpg',           'app-kitchen-island',    [1000, 640]],
-  ['4 - Copy.jpg',    'app-kitchen-island-2',  [1000, 640]],
-  ['5 - Copy.jpg',    'app-kitchen-cream',     [1000, 640]],
-  ['6.jpg',           'app-kitchen-taupe',     [1000, 640]],
-  ['image(10).png',   'app-waterfall-island',  [900, 600]],
-  ['image(8).png',    'app-kitchen-marble',    [900, 600]],
-  ['download.png',    'app-bathroom-vanity',   [1100, 700]],
+  // ['2.jpg',           'app-kitchen-dark',      [1000, 640]],   // held back: not used on the site
+  // ['3.jpg',           'app-kitchen-island',    [1000, 640]],   // held back: not used on the site
+  // ['4 - Copy.jpg',    'app-kitchen-island-2',  [1000, 640]],   // held back: not used on the site
+  // ['5 - Copy.jpg',    'app-kitchen-cream',     [1000, 640]],   // held back: not used on the site
+  // ['6.jpg',           'app-kitchen-taupe',     [1000, 640]],   // held back: not used on the site
+  // ['image(10).png',   'app-waterfall-island',  [900, 600]],   // held back: not used on the site
+  // ['image(8).png',    'app-kitchen-marble',    [900, 600]],   // held back: not used on the site
+  // ['download.png',    'app-bathroom-vanity',   [1100, 700]],   // held back: not used on the site
 ]
 
 fs.mkdirSync(OUT, { recursive: true })

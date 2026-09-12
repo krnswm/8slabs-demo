@@ -273,30 +273,14 @@ p { max-width: 66ch; }            /* 60–75 char measure */
 .section--rule { border-top: 1px solid var(--c-hairline); }
 
 .section--sunk { background-color: var(--c-sunk); background-image: var(--grain); }
-
-/* The one tonal break on the page. Stone is the only saturated thing in the
-   palette, and against near-black it finally reads as material rather than
-   swatch. Used exactly once — a second dark band would make it wallpaper. */
-.section--dark {
-  background-color: var(--c-footer);
-  background-image: var(--grain);
-  color: var(--c-on-dark-mut);
-}
-.section--dark h1, .section--dark h2, .section--dark h3 { color: var(--c-on-dark); }
-.section--dark .eyebrow { color: var(--c-accent-dark); }
-
-.narrow { max-width: 62ch; }
-.center { text-align: center; }
-.stack > * + * { margin-top: var(--s-4); }
+.narrow { max-width: 62ch; }.stack > * + * { margin-top: var(--s-4); }
 
 .grid { display: grid; gap: var(--s-6); }
 .grid--2 { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
 .grid--3 { grid-template-columns: repeat(auto-fit, minmax(min(270px, 100%), 1fr)); }
 .grid--4 { grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr)); }
 
-.sec-head { max-width: 60ch; margin-bottom: var(--s-8); }
-.sec-head.center { margin-inline: auto; }
-.sec-head p { margin-top: var(--s-3); }
+.sec-head { max-width: 60ch; margin-bottom: var(--s-8); }.sec-head p { margin-top: var(--s-3); }
 
 .on-dark { color: var(--c-on-dark-mut); }
 .on-dark h1, .on-dark h2, .on-dark h3, .on-dark h4 { color: var(--c-on-dark); }
@@ -399,19 +383,6 @@ p { max-width: 66ch; }            /* 60–75 char measure */
   .card .stone-tex { transition: transform 1200ms var(--ease-out); }
   .card:hover .stone-tex { transform: scale(1.055); }
 }
-
-.tag {
-  display: inline-block;
-  font-family: var(--f-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: var(--s-1) var(--s-2);
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius);
-  color: var(--c-body);
-}
-
 /* ============================================================ MOTION ==
    Everything below animates transform/opacity only — never width, height,
    top or left — so nothing here can trigger layout or shift the page (CLS).

@@ -28,6 +28,8 @@ npm run hero:check       # home hero contrast, real pixels, text hidden
 npm run phero:check      # interior hero contrast — inverted test, dark type
 npm run nav:check        # navbar contrast over both hero themes
 npm run contrast:check   # site-wide contrast sweep
+npm run responsive:check # 9 viewports x 6 pages: overflow, hero fit,
+                         # touch targets, type size
 ```
 
 `npm run build` produces plain static files in `/out`. Deploy that folder to

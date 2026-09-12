@@ -12,7 +12,8 @@
     "hero:check": "node scripts/check-hero-bg.mjs",
     "phero:check": "node scripts/check-phero-bg.mjs",
     "nav:check": "node scripts/check-nav.mjs",
-    "contrast:check": "node scripts/check-contrast.mjs"
+    "contrast:check": "node scripts/check-contrast.mjs",
+    "responsive:check": "node scripts/check-responsive.mjs"
   },
   "dependencies": {
     "next": "^15.5.20",

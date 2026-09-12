@@ -603,14 +603,24 @@ main:focus { outline: none; }
   position: absolute;
   inset: 0;
   background:
+    /* Stops spread across the whole fade, not bunched at the end. The first
+       version held 94% cream all the way to 13% and then dropped to nothing by
+       24% — flat, then a cliff, which showed as a hard horizontal edge across
+       the top of the hero. Five stops on a roughly eased curve instead. */
     linear-gradient(180deg,
       var(--c-bg) 0%,
-      color-mix(in srgb, var(--c-bg) 94%, transparent) 13%,
-      transparent 24%),
+      color-mix(in srgb, var(--c-bg) 95%, transparent) 7%,
+      color-mix(in srgb, var(--c-bg) 82%, transparent) 14%,
+      color-mix(in srgb, var(--c-bg) 58%, transparent) 22%,
+      color-mix(in srgb, var(--c-bg) 28%, transparent) 30%,
+      transparent 40%),
     linear-gradient(0deg,
       var(--c-bg) 0%,
-      color-mix(in srgb, var(--c-bg) 92%, transparent) 11%,
-      transparent 22%),
+      color-mix(in srgb, var(--c-bg) 93%, transparent) 6%,
+      color-mix(in srgb, var(--c-bg) 76%, transparent) 12%,
+      color-mix(in srgb, var(--c-bg) 50%, transparent) 19%,
+      color-mix(in srgb, var(--c-bg) 24%, transparent) 26%,
+      transparent 35%),
     linear-gradient(90deg,
       color-mix(in srgb, var(--c-bg) 34%, transparent) 0%,
       color-mix(in srgb, var(--c-bg) 86%, transparent) 26%,
@@ -636,12 +646,18 @@ main:focus { outline: none; }
          right on desktop. */
       linear-gradient(180deg,
         var(--c-bg) 0%,
-        color-mix(in srgb, var(--c-bg) 88%, transparent) 10%,
-        transparent 24%),
+        color-mix(in srgb, var(--c-bg) 90%, transparent) 6%,
+        color-mix(in srgb, var(--c-bg) 74%, transparent) 12%,
+        color-mix(in srgb, var(--c-bg) 46%, transparent) 19%,
+        color-mix(in srgb, var(--c-bg) 22%, transparent) 26%,
+        transparent 34%),
       linear-gradient(0deg,
         var(--c-bg) 0%,
-        color-mix(in srgb, var(--c-bg) 86%, transparent) 9%,
-        transparent 22%),
+        color-mix(in srgb, var(--c-bg) 88%, transparent) 6%,
+        color-mix(in srgb, var(--c-bg) 70%, transparent) 11%,
+        color-mix(in srgb, var(--c-bg) 42%, transparent) 17%,
+        color-mix(in srgb, var(--c-bg) 20%, transparent) 24%,
+        transparent 32%),
       /* Denser through the middle than desktop, and never fully open at the
          edges: the lead paragraph runs to within 20px of both margins here, so
          there is no spare width to hand back to the picture. */

@@ -588,30 +588,84 @@ main:focus { outline: none; }
   height: 100%;
   object-fit: cover;
 }
-/* The cream veil. `inset: 0` over the picture, inside the same layer, so the
-   two travel together and the veil can never be left behind by a stacking
-   context change. */
+/* The cream veil.
+   Shaped to the type, not poured evenly over the picture. These heroes centre
+   their headline, so the veil is dense through the middle third and opens out
+   at BOTH margins — the stone frames the text instead of fading off one side,
+   which is what made the first attempt read as an accident rather than a
+   decision. Two vertical bands protect the top crumb and the bottom spec row,
+   which run full width and would otherwise sit on open photograph.
+
+   Being symmetric, it needs no RTL mirroring: there is no dense end to follow
+   the headline, because both ends are the same. */
 .phero__bg::after {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    100deg,
-    var(--c-bg) 0%,
-    color-mix(in srgb, var(--c-bg) 88%, transparent) 46%,
-    color-mix(in srgb, var(--c-bg) 62%, transparent) 100%
-  );
+  background:
+    linear-gradient(180deg,
+      var(--c-bg) 0%,
+      color-mix(in srgb, var(--c-bg) 94%, transparent) 13%,
+      transparent 24%),
+    linear-gradient(0deg,
+      var(--c-bg) 0%,
+      color-mix(in srgb, var(--c-bg) 92%, transparent) 11%,
+      transparent 22%),
+    linear-gradient(90deg,
+      color-mix(in srgb, var(--c-bg) 34%, transparent) 0%,
+      color-mix(in srgb, var(--c-bg) 86%, transparent) 26%,
+      color-mix(in srgb, var(--c-bg) 94%, transparent) 50%,
+      color-mix(in srgb, var(--c-bg) 86%, transparent) 74%,
+      color-mix(in srgb, var(--c-bg) 34%, transparent) 100%);
 }
-/* Under RTL the headline moves to the right, so the dense end of the veil has
-   to move with it — a physical-direction gradient does not mirror itself. */
-[dir='rtl'] .phero__bg { transform: scaleX(-1); }
 
-/* Per-photograph opacity, measured rather than guessed. See the values quoted
-   in each rule: these are the real sampled luminances of the text zone. */
-.phero[data-photo='texture-black-veined'] .phero__bg img { opacity: 0.16; }
-.phero[data-photo='samples-linen']        .phero__bg img { opacity: 0.30; }
-.phero[data-photo='texture-fantasy-brown'] .phero__bg img { opacity: 0.28; }
-.phero[data-photo='granite-outcrop']      .phero__bg img { opacity: 0.26; }
+/* Phones get a denser veil and a quieter photograph.
+   The desktop veil buys its strength from the margins either side of a centred
+   headline. A phone has no such margins — the lead paragraph runs almost edge
+   to edge — so the same treatment drops the type to about 3:1. Measured, not
+   assumed: scripts/check-phero-bg.mjs tests 390x844 alongside 1440x900 for
+   exactly this reason, and the desktop numbers say nothing about it. */
+@media (max-width: 860px) {
+  .phero__bg img { opacity: 0.58 !important; }
+  .phero__bg::after {
+    background:
+      /* These two MUST end in `transparent`. A gradient holds its final stop
+         for the rest of the box, so ending them on a cream percentage carried
+         that cream down the whole hero — three layers composited to nearly
+         opaque and the photograph vanished on phones while still looking
+         right on desktop. */
+      linear-gradient(180deg,
+        var(--c-bg) 0%,
+        color-mix(in srgb, var(--c-bg) 88%, transparent) 10%,
+        transparent 24%),
+      linear-gradient(0deg,
+        var(--c-bg) 0%,
+        color-mix(in srgb, var(--c-bg) 86%, transparent) 9%,
+        transparent 22%),
+      /* Denser through the middle than desktop, and never fully open at the
+         edges: the lead paragraph runs to within 20px of both margins here, so
+         there is no spare width to hand back to the picture. */
+      linear-gradient(90deg,
+        color-mix(in srgb, var(--c-bg) 71%, transparent) 0%,
+        color-mix(in srgb, var(--c-bg) 80%, transparent) 50%,
+        color-mix(in srgb, var(--c-bg) 71%, transparent) 100%);
+  }
+}
+
+/* Accent type on a photograph uses the deeper bronze. Scoped to [data-photo]
+   so heroes without a picture keep the lighter accent they were tuned for. */
+.phero[data-photo] .eyebrow { color: var(--c-accent-deep); }
+.phero[data-photo] .phero__cue { color: var(--c-accent-deep); }
+
+/* Per-photograph opacity. Swept against the real text boxes, not chosen by
+   eye: scripts/check-phero-bg.mjs takes an opacity override as its second
+   argument for exactly this. The darkest photograph gets the lowest number.
+   At these values the binding element is the lead paragraph at roughly
+   5.6-6.1:1, with the 4.5 floor still clear. */
+.phero[data-photo='texture-black-veined'] .phero__bg img { opacity: 0.62; }
+.phero[data-photo='samples-linen']        .phero__bg img { opacity: 0.70; }
+.phero[data-photo='texture-fantasy-brown'] .phero__bg img { opacity: 0.78; }
+.phero[data-photo='granite-outcrop']      .phero__bg img { opacity: 0.70; }
 
 /* Framing. Each photograph has a different subject in a different place, and
    `cover` on a full-viewport hero crops hard, so each gets its own anchor. */

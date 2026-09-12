@@ -36,6 +36,14 @@
      Rule: never put --c-accent on small text, in either direction. */
   --c-accent-ink:  #836241;
   --c-accent-dark: #A87F55;
+  /* A third accent, for accent-coloured type sitting on a PHOTOGRAPH rather
+     than flat cream. --c-accent-ink is tuned to the bare background and was
+     the single element capping how far the interior hero photos could come
+     up: at 0.1367 luminance it failed before any other text did. This is the
+     same bronze taken down to 0.0886, which buys roughly 0.13 of background
+     luminance — the difference between a texture you squint at and one that
+     reads as deliberate. */
+  --c-accent-deep: #6B4F34;
 
   /* ---- Dark surfaces -----------------------------------------------
      A flat neutral near-black next to a warm cream site reads cold and

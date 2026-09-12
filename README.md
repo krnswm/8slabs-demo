@@ -1,6 +1,6 @@
-# 8Slabs — Website
+# 8Slabz — Website
 
-Marketing website for **8Slabs** (Simant Vijai) — exporter of Indian natural
+Marketing website for **8Slabz** (Simant Vijai) — exporter of Indian natural
 stone, Jaipur. Built with **Next.js 15 (App Router)**, exported as a fully
 static site.
 
@@ -15,7 +15,7 @@ point back at that document.
 npm install
 npm run dev        # http://localhost:3000
 npm run build      # static site → /out
-npm run preview    # serve /out locally
+npm run preview    # http://localhost:4321 — the BUILT site from /out
 ```
 
 `npm run build` produces plain static files in `/out`. Deploy that folder to
@@ -57,14 +57,15 @@ Two things make it worse here, both fixable:
   syncs `.next` (a 100MB+ cache Next rewrites on every keystroke). That fights
   the dev server for file locks and slows every rebuild. Fix: right-click
   `.next` and `node_modules` → *Always keep off this device* (Free up space),
-  or move the project out of OneDrive (e.g. `C:\dev\8slabs`).
+  or move the project out of OneDrive (e.g. `C:\dev\8slabz`).
 - **Stale dev servers.** Several `node` processes had been left running; kill
   stray `node.exe` in Task Manager before starting a fresh `npm run dev`.
 
 **The real product has none of this.** In the production build the whole site
 is static HTML and the nav links are prefetched, so page changes are
-effectively instant. To feel the true speed: `npm run build && npm run preview`
-and click around `http://localhost:3000`.
+effectively instant. To feel the true speed: stop the dev server, then
+`npm run build` followed by `npm run preview`, and click around
+`http://localhost:4321`.
 
 ---
 
@@ -158,7 +159,6 @@ values are a set, not a sequence, so they are not numbered.
 | Stone families (definition / applications / finishes) | `families` in `src/data/stones.js` |
 | Individual stones | `stones` in `src/data/stones.js` |
 | Signature stones (home strip) | `RACK_IDS` in `src/data/stones.js` |
-| Instagram reels (placeholder) | `src/data/socials.js` |
 | Hero photograph | `public/hero-*.{avif,webp}` |
 | Colour, type, spacing, motion tokens | `src/app/globals.css` (`:root`) |
 
@@ -167,9 +167,119 @@ site-wide.
 
 ---
 
+> **`npm run build` does not start a server.** `output: 'export'` writes the
+> whole site to `out/` as plain files and exits — that is the deliverable. There
+> is deliberately no `npm start`, and `next start` refuses outright:
+> `"next start" does not work with "output: export"`. To view the built site,
+> run `npm run preview` and open `http://localhost:4321`.
+>
+> **Do not run `npm run build` while `npm run dev` is running.** Both write to
+> `.next/`, and the build replaces the chunks the dev server is holding open.
+> The dev server then 500s every route with `Cannot find module './833.js'`,
+> which looks like a code fault and is not one. Stop dev first; if it has
+> already happened, delete `.next/` and restart.
+
+## Languages
+
+Eight locales. English is served from the root; the rest are path-prefixed:
+
+| | | | |
+|---|---|---|---|
+| `/` English | `/es/` Español | `/vi/` Tiếng Việt | `/zh/` 中文 |
+| `/ru/` Русский | `/pl/` Polski | `/it/` Italiano | `/ar/` العربية (RTL) |
+
+**Where things live**
+
+| What | File |
+|---|---|
+| Locale list, `dir`, path helper | `src/i18n/config.js` |
+| Translations (one file per locale) | `src/i18n/locales/*.js` |
+| Titles, descriptions, hreflang | `src/i18n/metadata.js` |
+| Per-script fonts | `src/i18n/fonts.js` |
+| Page bodies (shared by all locales) | `src/views/*.jsx` |
+
+Route files are one-liners that render a view with a locale, so the markup
+exists once rather than eight times.
+
+**Why path-prefixed and not a client-side toggle.** The whole point of
+translating is that a Spanish buyer searching in Spanish finds the Spanish
+page. That needs a real URL per language plus `hreflang` tags, which
+`src/i18n/metadata.js` emits for every page. A toggle that swaps strings in
+place is invisible to search engines and can't be shared.
+
+**Visitors reach their own language automatically.** A 580-byte inline script
+in `<head>` (`src/i18n/preference.js`) routes a first-time visitor by
+`navigator.languages`, and thereafter by whatever they last picked from the
+switcher. It runs before first paint, because a redirect after render shows a
+flash of English — and on Arabic, a flash of the whole layout in the wrong
+direction. It is client-side because `output: export` means `/` is one static
+file on a CDN: `Accept-Language` never reaches us.
+
+Three guards stop it trapping anyone:
+
+| Guard | Stops |
+|---|---|
+| A locale prefix in the URL wins outright | An emailed `/vi/catalogue/` link opening in the buyer's own language instead |
+| Only runs when the referrer is not this origin | Clicking "English" from `/es/` bouncing straight back to Spanish |
+| Only ever redirects *away* from `/` | Any pair of URLs redirecting to each other |
+
+The referrer guard is what makes the escape work when storage is blocked
+(Safari private mode throws on `setItem`), where the remembered choice cannot.
+
+`npm run locale:check` proves all of it against the built site — 16 assertions,
+including the escape-from-Spanish path with storage disabled and a back-button
+loop check. Run `npm run preview` first, then
+`npm run locale:check` (it defaults to port 4321).
+
+**Residual SEO note.** Google crawls predominantly from the US with
+`Accept-Language: en`, so it sees English at `/` and follows the `hreflang`
+tags to the rest. If it ever crawled with another language it would be
+redirected like any visitor; the `hreflang` set is what keeps that from
+mattering. Auto-redirecting is acceptable to Google *provided* users can
+override it, which the switcher does.
+
+**Two root layouts.** `src/app/(en)/` and `src/app/[locale]/` each have their
+own, because only a root layout may render `<html>` and `lang`/`dir` must be
+correct in the *served* markup — setting them client-side would leave crawlers
+and screen readers seeing English on the Arabic page. Both share
+`src/components/SiteShell.jsx`.
+
+**Fonts follow the script.** Archivo and Newsreader carry Latin/Latin-Ext and
+Vietnamese. They contain no Arabic, Chinese or Cyrillic glyphs at all, so those
+locales switch to Noto faces via `:lang()` — nobody downloads a font for a
+script they aren't reading. (Newsreader has no Cyrillic subset; asking for one
+is a build error.)
+
+**RTL** is handled by logical properties, so almost nothing needed mirroring.
+The exceptions are physical-direction things: the hero's `linear-gradient`
+scrim and the photograph flip together via `[dir='rtl'] .hero__media`, and the
+catalogue's alternating sides invert. Verify with
+`node scripts/check-hero-bg.mjs http://localhost:3000/ar/` — it is
+direction-aware and samples the half the text actually occupies.
+
+**Consistency is enforced.** `npm run build` runs `scripts/check-i18n.mjs`
+first and fails if any locale drifts from the English key shape. A missing key
+doesn't throw — it renders `undefined` mid-sentence in a language nobody on the
+team reads.
+
+### Translations need native review before launch
+
+Every non-English locale is marked `meta.reviewed: false`. They are good enough
+to demo and to lay out against, but the site makes **commercial claims** —
+delivery commitments, quality guarantees, material specifications — to buyers
+committing to container-scale orders. Have a native speaker check the wording
+in each market before launch, then flip `reviewed` to `true`.
+
+Deliberately **not** translated, and correct to leave alone: stone trade names
+(Kandla Grey, Makrana White — ordered by those names in every market), place
+names, the brand, phone and email.
+
+
+---
+
 ## Before launch — required
 
-1. **Set the domain.** `site.url` in `src/data/site.js` is `https://8slabs.com`,
+1. **Set the domain.** `site.url` in `src/data/site.js` is `https://8slabz.com`,
    a placeholder (SRS §9: no domain registered). This builds the absolute URLs
    for the OpenGraph tags — link previews break until it is real.
 
@@ -177,7 +287,7 @@ site-wide.
    generated from a supplied `Bg.png`. **Its provenance and licence have not
    been confirmed** — if it is stock or AI-generated it needs a commercial
    licence before launch. It is used as *atmosphere* only, never captioned as
-   8Slabs' own material, which is the defensible use; do not reuse it as a
+   8Slabz' own material, which is the defensible use; do not reuse it as a
    catalogue image. Source is 1536×1024, so it upscales on large retina
    displays — a higher-resolution original would be better. Re-encode with
    `node scripts/hero-image.mjs <file>`.
@@ -198,15 +308,9 @@ site-wide.
    `src/data/stones.js` (each carries an `approved` flag). Per their
    instruction, **no stone counts appear anywhere on the site.**
 
-5. **Supply the Instagram account.** `/socials` replaces the old Journal, per
-   client feedback. `src/data/socials.js` holds **dummy reels** for layout only,
-   labelled as placeholders on screen. Nothing links out yet — `site.instagram.url`
-   is `null`, and until it is real the page's CTA falls back to WhatsApp rather
-   than a dead or invented link. No view/follower counts are shown anywhere:
-   those are factual claims about reach and will come with the real feed.
 
 6. **Replace the placeholder business email.** `site.email` is
-   `hello@8slabs.com` — a **placeholder that does not exist yet**, so mail sent
+   `hello@8slabz.com` — a **placeholder that does not exist yet**, so mail sent
    to it will bounce. Client feedback: "Email we will make of business and not
    use the personal one." The personal Gmail has been removed from the site
    entirely (it survives only in a code comment explaining why). Swap in the
@@ -246,15 +350,6 @@ From the client's written feedback (`Feedbacck on the site.docx`):
 
 ---
 
-## Deferred
-
-- **Multi-language.** SRS §4 asks for "English and the European languages"
-  without naming them. Shipped English-only and i18n-ready: all copy is
-  centralised in `src/data/`, so a translation layer drops in without a
-  rewrite. Confirm target markets first — §4 answered "NA" for current export
-  regions, so nobody yet knows which languages matter.
-
----
 
 ## Link previews
 

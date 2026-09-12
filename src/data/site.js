@@ -8,16 +8,16 @@
  */
 
 export const site = {
-  brand: '8Slabs',
+  brand: '8Slabz',
   legalName: 'Simant Vijai',
   /* From the client's own home-page copy. */
   tagline: 'Sourced with Experience, Delivered with Confidence',
   established: 2026,
 
-  /* TODO(client): no domain is registered yet (SRS §9 = "N"). Point this at the
-     real domain before launch — it is what builds absolute URLs for the
-     OpenGraph tags that render WhatsApp / LinkedIn link previews. */
-  url: 'https://8slabs.com',
+  /* The registered domain. Builds the absolute URLs behind the OpenGraph tags
+     that render WhatsApp / LinkedIn link previews, so it must match the live
+     host exactly. */
+  url: 'https://8slabz.com',
 
   /* TODO(client): PLACEHOLDER business email.
      Client feedback: "Email we will make of business and not use the personal
@@ -25,7 +25,7 @@ export const site = {
      the site accordingly. Replace the line below with the real business
      mailbox the moment it exists — it is not live yet, so mail sent here will
      bounce. */
-  email: 'hello@8slabs.com',
+  email: 'hello@8slabz.com',
   emailIsPlaceholder: true,
 
   phone: '+91 85279 44844',
@@ -41,13 +41,6 @@ export const site = {
     country: 'India',
   },
 
-  /* TODO(client): real Instagram handle + URL needed. The Socials page uses
-     placeholder reels until the account is supplied — see src/data/socials.js. */
-  instagram: {
-    handle: '@8slabs',
-    url: null,
-    isPlaceholder: true,
-  },
 
   /* The client's own words, from their home-page copy. */
   description:

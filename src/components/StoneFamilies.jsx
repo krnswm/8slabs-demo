@@ -1,5 +1,6 @@
 import { families, stonesIn } from '../data/stones.js'
 import { whatsappLink } from '../data/site.js'
+import { getDictionary, fill } from '../i18n/dictionaries.js'
 import StoneSwatch from './StoneSwatch.jsx'
 import Reveal from './Reveal.jsx'
 
@@ -7,11 +8,9 @@ import Reveal from './Reveal.jsx'
  * The catalogue, led by material.
  *
  * One section per stone family: the definition (blurb + Applications +
- * Finishes) on one side, a representative set of stones on the other, and the
- * sides ALTERNATE down the page — the "definition on right and left" the
- * client asked for. Odd families read definition-left, even read
- * definition-right, which gives the page a zig-zag rhythm and stops six
- * near-identical blocks from reading as a list.
+ * Finishes) on one side, a representative set of stones on the other, sides
+ * ALTERNATING down the page — the "definition on right and left" the client
+ * asked for.
  *
  * No counts anywhere: not per family, not in total. The client explicitly does
  * not want the number of stones they deal in stated.
@@ -19,57 +18,70 @@ import Reveal from './Reveal.jsx'
  * A server component — no filtering state, so the whole catalogue is static
  * HTML and costs zero JavaScript.
  */
-export default function StoneFamilies() {
+export default function StoneFamilies({ locale = 'en' }) {
+  const t = getDictionary(locale)
+
   return (
     <div className="fams">
       {families.map((f, i) => {
         const stones = stonesIn(f.name)
         if (stones.length === 0) return null
 
+        /* Copy comes from the dictionary; src/data/stones.js stays the single
+           source for WHICH families exist and which stones sit in them. */
+        const copy = t.families[f.name] || {
+          name: f.name,
+          blurb: f.blurb,
+          applications: f.applications,
+          finishes: f.finishes,
+        }
+        const slug = f.name.toLowerCase()
+
         return (
           <section
             key={f.name}
             className="fam"
             data-flip={i % 2 === 1 ? 'true' : undefined}
-            id={f.name.toLowerCase()}
-            aria-labelledby={`fam-${f.name.toLowerCase()}`}
+            id={slug}
+            aria-labelledby={`fam-${slug}`}
           >
-            {/* ---- Definition ---- */}
             <Reveal className="fam__def">
-              <span className="eyebrow">Material</span>
-              <h2 id={`fam-${f.name.toLowerCase()}`}>{f.name}</h2>
-              <p className="fam__blurb">{f.blurb}</p>
+              <span className="eyebrow">{t.common.material}</span>
+              <h2 id={`fam-${slug}`}>{copy.name}</h2>
+              <p className="fam__blurb">{copy.blurb}</p>
 
               <dl className="fam__spec">
                 <div className="fam__spec-row">
-                  <dt className="mono">Applications</dt>
-                  <dd>{f.applications}</dd>
+                  <dt className="mono">{t.common.applications}</dt>
+                  <dd>{copy.applications}</dd>
                 </div>
                 <div className="fam__spec-row">
-                  <dt className="mono">Finishes</dt>
-                  <dd>{f.finishes}</dd>
+                  <dt className="mono">{t.common.finishes}</dt>
+                  <dd>{copy.finishes}</dd>
                 </div>
               </dl>
 
               <a
                 className="btn btn--ghost fam__cta"
                 href={whatsappLink(
-                  `Hello 8Slabs, I'd like to enquire about ${f.name.toLowerCase()}. Quantity and destination port to follow.`
+                  fill(t.common.whatsappMaterial, { material: copy.name })
                 )}
                 target="_blank"
                 rel="noreferrer noopener"
               >
-                Enquire about {f.name.toLowerCase()}
+                {fill(t.common.enquireAbout, { material: copy.name })}
               </a>
             </Reveal>
 
-            {/* ---- Representative stones ---- */}
+            {/* Stone names and origins are NOT translated: they are
+                international trade names and place names, ordered by those
+                names in every market. */}
             <Reveal className="fam__grid" delay={80}>
               {stones.map((s) => (
                 <figure key={s.id} className="fam__stone" id={s.id}>
                   <span className="fam__stone-face">
                     <StoneSwatch swatch={s.swatch} label={s.name} variant="fam" />
-                    <span className="photo-flag">Placeholder</span>
+                    <span className="photo-flag">{t.common.placeholder}</span>
                   </span>
                   <figcaption>
                     <span className="fam__stone-name">{s.name}</span>

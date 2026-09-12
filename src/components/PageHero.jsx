@@ -17,7 +17,7 @@
  * negative space around it is deliberate; the full-width context line and spec
  * footer frame that space so it feels composed, not empty.
  */
-export default function PageHero({ crumb, meta, eyebrow, title, lead, facts = [] }) {
+export default function PageHero({ crumb, meta, eyebrow, title, lead, facts = [], scrollLabel = 'Scroll' }) {
   return (
     <header className="phero">
       <div className="container phero__inner">
@@ -43,7 +43,7 @@ export default function PageHero({ crumb, meta, eyebrow, title, lead, facts = []
               ))}
             </dl>
           )}
-          <span className="phero__cue" aria-hidden="true">Scroll</span>
+          <span className="phero__cue" aria-hidden="true">{scrollLabel}</span>
         </div>
       </div>
     </header>

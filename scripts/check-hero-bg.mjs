@@ -37,6 +37,9 @@ await page.evaluate(() => {
 })
 await new Promise((r) => setTimeout(r, 900))
 await page.screenshot({ path: shot })
+// Which half does the type occupy? Under RTL the hero column mirrors, and
+// sampling the left half would measure the empty side of the photograph.
+const dir = await page.evaluate(() => document.documentElement.dir || 'ltr')
 await browser.close()
 
 const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4) }
@@ -63,9 +66,15 @@ const RAIL = lum(200, 198, 195)
 // Zones as fractions of the viewport so the same checks work at any width.
 const fx = (f) => Math.round(f * info.width)
 const fy = (f) => Math.round(f * info.height)
-const textRight = info.width < 700 ? 0.95 : 0.49
+const narrow = info.width < 700
+// LTR: text occupies the left column. RTL: the right one.
+const [tx0, tx1] = narrow
+  ? [0.05, 0.95]
+  : dir === 'rtl'
+    ? [0.51, 0.89]
+    : [0.11, 0.49]
 const checks = [
-  ['headline + copy (text column)', CREAM, zone(fx(0.11), fx(textRight), fy(0.31), fy(0.74))],
+  [`headline + copy (${dir} text column)`, CREAM, zone(fx(tx0), fx(tx1), fy(0.31), fy(0.74))],
   ['top rail (full width)', RAIL, zone(fx(0.11), fx(0.89), fy(0.098), fy(0.125))],
   ['material rail (full width)', RAIL, zone(fx(0.11), fx(0.89), fy(0.93), fy(0.97))],
 ]

@@ -1,55 +1,55 @@
 import Link from 'next/link'
 import { site, telLink, mailLink, whatsappLink } from '../data/site.js'
+import { localePath, DEFAULT_LOCALE } from '../i18n/config.js'
+import { fill } from '../i18n/dictionaries.js'
 import BrandMark from './BrandMark.jsx'
 
-export default function Footer() {
+export default function Footer({ locale = DEFAULT_LOCALE, t }) {
   const year = new Date().getFullYear()
+  const p = (path) => localePath(path, locale)
+  const cat = p('/catalogue/')
 
   return (
     <footer className="footer">
       <div className="container">
         <div className="footer__grid">
           <div>
-            <Link href="/" className="brand" aria-label="8Slabs — home">
+            <Link href={p('/')} className="brand" aria-label={`${site.brand} â ${t.nav.homeAria}`}>
               <BrandMark className="brand__mark" />
-              <span className="brand__word">8Slabs</span>
+              <span className="brand__word">{site.brand}</span>
             </Link>
-            <p style={{ marginTop: 'var(--s-4)', maxWidth: '34ch' }}>
-              Natural stone from North India’s stone belt, sourced and shipped for
-              professional buyers worldwide.
-            </p>
+            <p style={{ marginTop: 'var(--s-4)', maxWidth: '34ch' }}>{t.footer.blurb}</p>
           </div>
 
           <div>
-            <h4>Pages</h4>
+            <h4>{t.footer.pages}</h4>
             <ul className="footer__list">
-              <li><Link href="/about/">About</Link></li>
-              <li><Link href="/catalogue/">Catalogue</Link></li>
-              <li><Link href="/socials/">Socials</Link></li>
-              <li><Link href="/contact/">Contact</Link></li>
+              <li><Link href={p('/about/')}>{t.nav.about}</Link></li>
+              <li><Link href={cat}>{t.nav.catalogue}</Link></li>
+              <li><Link href={p('/contact/')}>{t.nav.contact}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4>Materials</h4>
+            <h4>{t.footer.materials}</h4>
             <ul className="footer__list">
-              <li><Link href="/catalogue/#kandla-grey">Sandstone</Link></li>
-              <li><Link href="/catalogue/#kota-blue">Limestone</Link></li>
-              <li><Link href="/catalogue/#silver-shine">Quartzite</Link></li>
-              <li><Link href="/catalogue/#multicolor-slate">Slate</Link></li>
-              <li><Link href="/catalogue/#makrana-white">Marble &amp; granite</Link></li>
+              <li><Link href={`${cat}#sandstone`}>{t.families.Sandstone.name}</Link></li>
+              <li><Link href={`${cat}#limestone`}>{t.families.Limestone.name}</Link></li>
+              <li><Link href={`${cat}#quartzite`}>{t.families.Quartzite.name}</Link></li>
+              <li><Link href={`${cat}#granite`}>{t.families.Granite.name}</Link></li>
+              <li><Link href={`${cat}#slate`}>{t.footer.slateMarble}</Link></li>
             </ul>
           </div>
 
           <div>
-            <h4>Get in touch</h4>
+            <h4>{t.footer.getInTouch}</h4>
             <ul className="footer__list">
               <li>
-                <a href={whatsappLink()} target="_blank" rel="noreferrer noopener">
-                  WhatsApp {site.phone}
+                <a href={whatsappLink(t.common.whatsappGreeting)} target="_blank" rel="noreferrer noopener">
+                  {fill(t.footer.whatsapp, { phone: site.phone })}
                 </a>
               </li>
-              <li><a href={telLink}>Call {site.phone}</a></li>
+              <li><a href={telLink}>{fill(t.footer.call, { phone: site.phone })}</a></li>
               <li><a href={mailLink}>{site.email}</a></li>
               {/* Physical address removed per client feedback ("no address").
                   It is still in src/data/site.js if they change their mind. */}
@@ -58,8 +58,8 @@ export default function Footer() {
         </div>
 
         <div className="footer__bottom">
-          <span>© {year} {site.brand} · {site.legalName}</span>
-          <span>Indian natural stone · Exported worldwide</span>
+          <span>Â© {year} {site.brand} Â· {site.legalName}</span>
+          <span>{t.footer.rights}</span>
         </div>
       </div>
     </footer>

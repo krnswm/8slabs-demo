@@ -1,5 +1,5 @@
 /* =====================================================================
-   8Slabs — Components
+   8Slabz — Components
    Loaded after globals.css. Every value here resolves to a token defined
    there; no raw hex belongs in this file.
    ===================================================================== */
@@ -858,7 +858,9 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
 /* ================================================= FLOATING WHATSAPP == */
 .wa-float {
   position: fixed;
-  right: max(var(--s-4), env(safe-area-inset-right));
+  /* Logical, not physical: under dir="rtl" the button belongs on the other
+     side, next to the reader's thumb rather than across the page from it. */
+  inset-inline-end: max(var(--s-4), env(safe-area-inset-right));
   bottom: max(var(--s-4), env(safe-area-inset-bottom));
   z-index: var(--z-float);
   width: 56px; height: 56px;
@@ -1022,45 +1024,147 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
   .fam__spec-row { grid-template-columns: 1fr; gap: var(--s-1); }
 }
 
-/* ============================================================= REELS ==
-   Instagram reel wall. 9:16 cards — the shape reels actually are, so the
-   layout is already right when real thumbnails replace the placeholders. */
-.reels {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
-  gap: var(--s-6);
+
+
+/* =====================================================  SCRIPT SUPPORT  ==
+   The brand faces cover Latin, Latin-Ext and Vietnamese. They contain no
+   Arabic, Chinese or Cyrillic glyphs at all — so for those languages the
+   browser would silently substitute whatever it happened to have, and the
+   page would lose its typography in exactly the languages we went to the
+   trouble of translating. Each script gets a real face instead, swapped in
+   by :lang() so nobody downloads a font for a script they are not reading. */
+:lang(ru) {
+  --f-body: var(--font-cyrillic), 'Noto Serif', Georgia, serif;
 }
-.reel { display: block; }
-.reel__face {
-  position: relative;
-  display: block;
-  aspect-ratio: 9 / 16;
-  overflow: hidden;
-  border: 1px solid var(--c-border);
-  border-radius: var(--radius-lg);
+:lang(ar) {
+  --f-display: var(--font-arabic), 'Noto Sans Arabic', system-ui, sans-serif;
+  --f-body: var(--font-arabic), 'Noto Sans Arabic', system-ui, sans-serif;
+  --f-mono: var(--font-arabic), 'Noto Sans Arabic', system-ui, sans-serif;
 }
-.reel__play {
-  position: absolute;
-  left: 50%; top: 50%;
-  transform: translate(-50%, -50%);
-  width: 46px; height: 46px;
-  display: grid; place-items: center;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--c-footer) 62%, transparent);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  color: #fff;
-  padding-left: 2px;                 /* optical centring of the triangle */
-  transition: transform var(--d-base) var(--ease-out);
+:lang(zh) {
+  --f-display: var(--font-cjk), 'Noto Sans SC', system-ui, sans-serif;
+  --f-body: var(--font-cjk), 'Noto Sans SC', system-ui, sans-serif;
+  --f-mono: var(--font-cjk), 'Noto Sans SC', ui-monospace, monospace;
 }
-.reel__cap { display: grid; gap: 2px; margin-top: var(--s-3); }
-.reel__text {
-  font-size: var(--t-sm);
+
+/* Arabic and Chinese have no uppercase, and no small-caps tradition. Forcing
+   text-transform and wide letter-spacing on them is meaningless at best and
+   breaks Arabic letter joining at worst. */
+:lang(ar) .mono, :lang(ar) .eyebrow, :lang(ar) .btn,
+:lang(zh) .mono, :lang(zh) .eyebrow, :lang(zh) .btn {
+  text-transform: none;
+  letter-spacing: 0;
+}
+/* The display face is set expanded via a width axis the substitute faces do
+   not have; leaving the setting on does nothing useful and can trip up
+   fallback metrics. */
+:lang(ar) h1, :lang(ar) h2, :lang(ar) h3, :lang(ar) h4,
+:lang(zh) h1, :lang(zh) h2, :lang(zh) h3, :lang(zh) h4 {
+  font-variation-settings: normal;
+  letter-spacing: 0;
+}
+/* Chinese has no inter-word spaces, so a tight Latin line-height crowds it. */
+:lang(zh) body, :lang(zh) p { line-height: 1.8; }
+:lang(ar) body, :lang(ar) p { line-height: 1.9; }
+
+/* ===========================================================  RTL  =======
+   Almost nothing is needed here, because the layout is built on logical
+   properties (padding-inline, margin-inline, inset) which flip automatically
+   under dir="rtl". Only the handful of places using physical directions or
+   directional gradients need a mirror. */
+[dir='rtl'] .nav__link::after { transform-origin: right; }
+[dir='rtl'] .btn::before { transform-origin: right center; }
+[dir='rtl'] .link-u { background-position: 100% 100%; }
+
+/* The hero scrim is a PHYSICAL gradient (linear-gradient(100deg …)), so it does
+   not mirror itself under RTL the way logical properties do. Flipping only the
+   photograph left the heavy side of the scrim on the left while the Arabic text
+   moved to the right — measured 2.68:1, a real failure. Mirroring the whole
+   media layer flips image and scrim together, so the protected side always
+   follows the text. */
+[dir='rtl'] .hero__media { transform: scaleX(-1); }
+[dir='rtl'] .phero__cue::after,
+[dir='rtl'] .hero__cue::after { transform: scaleX(-1); }
+
+/* The catalogue alternates sides down the page; under RTL the whole grid
+   mirrors, so the flip flag has to mirror with it to keep the rhythm. */
+[dir='rtl'] .fam[data-flip='true'] .fam__def { order: 0; }
+[dir='rtl'] .fam[data-flip='true'] .fam__grid { order: 0; }
+[dir='rtl'] .fam:not([data-flip]) .fam__def { order: 2; }
+[dir='rtl'] .fam:not([data-flip]) .fam__grid { order: 1; }
+
+/* ==================================================  LANGUAGE SWITCHER  == */
+.lang { position: relative; display: inline-flex; }
+.lang__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  padding-inline: var(--s-2);
+  font-family: var(--f-mono);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
   color: var(--c-heading);
-  line-height: 1.45;
+  border-radius: 999px;
+  transition: color var(--d-base) var(--ease-out);
 }
-@media (hover: hover) {
-  .reel .stone-tex { transition: transform 1200ms var(--ease-out); }
-  .reel:hover .stone-tex { transform: scale(1.06); }
-  .reel:hover .reel__play { transform: translate(-50%, -50%) scale(1.08); }
+.lang__btn:hover { color: var(--c-accent-ink); }
+.nav[data-theme='dark'] .lang__btn { color: var(--c-bg); }
+.nav[data-theme='dark'] .lang__btn:hover { color: var(--c-gold); }
+.lang__code { font-weight: 500; }
+
+.lang__menu {
+  position: absolute;
+  top: calc(100% + var(--s-2));
+  inset-inline-end: 0;
+  z-index: var(--z-modal);
+  min-width: 13rem;
+  padding: var(--s-2);
+  border-radius: 14px;
+  background: var(--c-bg);
+  border: 1px solid var(--c-border);
+  box-shadow: var(--e-3);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition:
+    opacity var(--d-exit) var(--ease-in),
+    transform var(--d-exit) var(--ease-in),
+    visibility 0s linear var(--d-exit);
+}
+.lang__menu[data-open='true'] {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity var(--d-base) var(--ease-out),
+    transform var(--d-base) var(--ease-out),
+    visibility 0s;
+}
+.lang__menu a {
+  display: flex;
+  align-items: baseline;
+  min-height: 44px;
+  padding: var(--s-2) var(--s-3);
+  border-radius: 8px;
+  color: var(--c-heading);
+  transition: background-color var(--d-fast) var(--ease-out);
+}
+.lang__menu a:hover { background: var(--c-sunk); }
+.lang__menu a[aria-current='true'] { background: var(--c-sunk); font-weight: 600; }
+/* Each language is written in its own script, and must be rendered in a face
+   that has those glyphs — otherwise the menu shows tofu for the very options a
+   non-English reader is looking for. */
+.lang__menu a[lang='ar'] { font-family: var(--font-arabic), system-ui, sans-serif; }
+.lang__menu a[lang='zh'] { font-family: var(--font-cjk), system-ui, sans-serif; }
+.lang__menu a[lang='ru'] { font-family: var(--font-cyrillic), Georgia, serif; }
+.lang__endonym { font-size: var(--t-sm); }
+
+@media (max-width: 900px) {
+  /* Inside the dropdown the switcher is a full-width row like the links. */
+  .lang { width: 100%; }
+  .lang__btn { width: 100%; justify-content: flex-start; padding-block: var(--s-3); }
+  .lang__menu { position: static; min-width: 0; box-shadow: none; border: 0; padding: 0; }
+  .lang__menu[data-open='true'] { transform: none; }
+  .lang__menu a { padding-inline: 0; }
 }

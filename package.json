@@ -1,12 +1,14 @@
 {
-  "name": "8slabs-website",
+  "name": "8slabz-website",
   "private": true,
   "version": "2.0.0",
-  "description": "Marketing website for 8Slabs — Indian natural stone exporter.",
+  "description": "Marketing website for 8Slabz — Indian natural stone exporter.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "preview": "serve out"
+    "build": "node scripts/check-i18n.mjs && next build",
+    "preview": "serve out -l 4321",
+    "i18n:check": "node scripts/check-i18n.mjs",
+    "locale:check": "node scripts/check-locale-routing.mjs"
   },
   "dependencies": {
     "next": "^15.5.20",

@@ -1,17 +1,7 @@
-import { site, whatsappLink, telLink, mailLink } from '../../data/site.js'
-import PageHero from '../../components/PageHero.jsx'
-import Reveal from '../../components/Reveal.jsx'
-
-export const metadata = {
-  title: 'Contact',
-  description:
-    'Reach 8Slabs on WhatsApp, phone or email. Send the material, quantity and destination port and get availability, finishes and a plan for your container.',
-  alternates: { canonical: '/contact/' },
-  openGraph: {
-    title: 'Contact — 8Slabs',
-    description: 'WhatsApp, call or email 8Slabs — Jaipur, Rajasthan, India.',
-  },
-}
+import { site, whatsappLink, telLink, mailLink } from '../data/site.js'
+import { getDictionary } from '../i18n/dictionaries.js'
+import PageHero from '../components/PageHero.jsx'
+import Reveal from '../components/Reveal.jsx'
 
 /* Icons: single family, consistent 1.5px stroke, 20px box. */
 const icons = {
@@ -25,12 +15,6 @@ const icons = {
     <>
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <path d="m3.5 6.5 8.5 6 8.5-6" />
-    </>
-  ),
-  pin: (
-    <>
-      <path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11z" />
-      <circle cx="12" cy="10" r="2.5" />
     </>
   ),
 }
@@ -49,35 +33,48 @@ function Icon({ name, filled = false }) {
   )
 }
 
-export default function Contact() {
+export default function Contact({ locale = 'en' }) {
+  const t = getDictionary(locale)
+
+  const include = [
+    [t.contact.includeMaterial, t.contact.includeMaterialBody],
+    [t.contact.includeQuantity, t.contact.includeQuantityBody],
+    [t.contact.includeDestination, t.contact.includeDestinationBody],
+    [t.contact.includeTimeline, t.contact.includeTimelineBody],
+  ]
+
   return (
     <div className="page-in">
       <PageHero
-        crumb="8Slabs — Contact"
-        meta="B2B enquiries"
-        eyebrow="Contact"
-        title="Message us. You will get a person."
-        lead="Send the material, the quantity and the destination port. That is enough for a real answer on availability, finishes and lead time."
+        crumb={t.contact.crumb}
+        meta={t.contact.metaLine}
+        eyebrow={t.contact.eyebrow}
+        title={t.contact.heroTitle}
+        lead={t.contact.heroLead}
         facts={[
-          ['Fastest', 'WhatsApp'],
-          ['Reply', 'Same day'],
-          ['Scope', 'B2B only'],
+          [t.contact.factFastest, t.contact.factFastestValue],
+          [t.contact.factReply, t.contact.factReplyValue],
+          [t.contact.factScope, t.contact.factScopeValue],
         ]}
+        scrollLabel={t.common.scroll}
       />
 
       <section className="section">
         <div className="container contact-grid">
           <Reveal>
-            <h2>Direct lines</h2>
-            <p style={{ marginTop: 'var(--s-4)' }}>
-              WhatsApp is the fastest — it is where the business actually runs.
-            </p>
+            <h2>{t.contact.linesTitle}</h2>
+            <p style={{ marginTop: 'var(--s-4)' }}>{t.contact.linesBody}</p>
 
             <div style={{ marginTop: 'var(--s-8)' }}>
-              <a className="contact-row" href={whatsappLink()} target="_blank" rel="noreferrer noopener">
+              <a
+                className="contact-row"
+                href={whatsappLink(t.common.whatsappGreeting)}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
                 <span className="contact-row__icon"><Icon name="whatsapp" filled /></span>
                 <span>
-                  <span className="contact-row__k">WhatsApp — fastest</span>
+                  <span className="contact-row__k">{t.contact.labelWhatsapp}</span>
                   <span className="contact-row__v">{site.phone}</span>
                 </span>
               </a>
@@ -85,7 +82,7 @@ export default function Contact() {
               <a className="contact-row" href={telLink}>
                 <span className="contact-row__icon"><Icon name="phone" filled /></span>
                 <span>
-                  <span className="contact-row__k">Phone</span>
+                  <span className="contact-row__k">{t.contact.labelPhone}</span>
                   <span className="contact-row__v">{site.phone}</span>
                 </span>
               </a>
@@ -93,7 +90,7 @@ export default function Contact() {
               <a className="contact-row" href={mailLink}>
                 <span className="contact-row__icon"><Icon name="mail" /></span>
                 <span>
-                  <span className="contact-row__k">Email</span>
+                  <span className="contact-row__k">{t.contact.labelEmail}</span>
                   <span className="contact-row__v">{site.email}</span>
                 </span>
               </a>
@@ -105,11 +102,11 @@ export default function Contact() {
             <a
               className="btn btn--wa"
               style={{ marginTop: 'var(--s-8)' }}
-              href={whatsappLink()}
+              href={whatsappLink(t.common.whatsappGreeting)}
               target="_blank"
               rel="noreferrer noopener"
             >
-              Open WhatsApp
+              {t.contact.openWhatsapp}
             </a>
           </Reveal>
 
@@ -119,18 +116,10 @@ export default function Contact() {
               backend is worse than no form at all. */}
           <Reveal delay={80}>
             <div className="card" style={{ padding: 'var(--s-8)' }}>
-              <h3>What to include</h3>
-              <p style={{ marginTop: 'var(--s-4)' }}>
-                You will get a faster, more useful answer if the first message
-                covers:
-              </p>
+              <h3>{t.contact.includeTitle}</h3>
+              <p style={{ marginTop: 'var(--s-4)' }}>{t.contact.includeBody}</p>
               <ul className="chain" style={{ marginTop: 'var(--s-6)' }}>
-                {[
-                  ['Material', 'Which stone, and the finish if you know it.'],
-                  ['Quantity', 'Volume or container count. The minimum is one container load.'],
-                  ['Destination', 'Port of discharge — it drives freight and lead time.'],
-                  ['Timeline', 'When it needs to land, not when it needs to ship.'],
-                ].map(([k, v], i) => (
+                {include.map(([k, v], i) => (
                   <li key={k} className="chain__item" style={{ paddingBlock: 'var(--s-4)' }}>
                     <span className="chain__n">{String(i + 1).padStart(2, '0')}</span>
                     <div>
@@ -140,8 +129,11 @@ export default function Contact() {
                   </li>
                 ))}
               </ul>
-              <p className="mono" style={{ marginTop: 'var(--s-6)', textTransform: 'none', letterSpacing: '0.03em' }}>
-                Business-to-business only · Pricing quoted per requirement
+              <p
+                className="mono"
+                style={{ marginTop: 'var(--s-6)', textTransform: 'none', letterSpacing: '0.03em' }}
+              >
+                {t.contact.footNote}
               </p>
             </div>
           </Reveal>

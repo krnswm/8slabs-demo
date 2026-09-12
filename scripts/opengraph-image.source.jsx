@@ -21,7 +21,7 @@ import { rackStones } from '../src/data/stones.js'
  * exists for, on every host except Vercel. The client has no hosting yet
  * (SRS §9), so a plain .png in public/ is the portable choice.
  */
-export const alt = '8Slabs — Indian natural stone, sourced and shipped'
+export const alt = '8Slabz — Indian natural stone, sourced and shipped'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -80,7 +80,7 @@ export default function Image() {
               lineHeight: 1.05,
             }}
           >
-            8Slabs
+            8Slabz
           </div>
           <div
             style={{

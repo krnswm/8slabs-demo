@@ -3,22 +3,25 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { whatsappLink } from '../data/site.js'
+import { site, whatsappLink } from '../data/site.js'
+import { localePath, DEFAULT_LOCALE } from '../i18n/config.js'
 import BrandMark from './BrandMark.jsx'
+import LanguageSwitcher from './LanguageSwitcher.jsx'
 
-const links = [
-  { href: '/', label: 'Home' },
-  { href: '/about/', label: 'About' },
-  { href: '/catalogue/', label: 'Catalogue' },
-  { href: '/socials/', label: 'Socials' },
-  { href: '/contact/', label: 'Contact' },
-]
-
-export default function Nav() {
+export default function Nav({ locale = DEFAULT_LOCALE, t }) {
   const pathname = usePathname()
   const [open, setOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [onDark, setOnDark] = useState(false)
+
+  const p = (path) => localePath(path, locale)
+  const home = p('/')
+  const links = [
+    { href: home, label: t.nav.home },
+    { href: p('/about/'), label: t.nav.about },
+    { href: p('/catalogue/'), label: t.nav.catalogue },
+    { href: p('/contact/'), label: t.nav.contact },
+  ]
 
   // Close the menu on navigation — a menu that survives a route change leaves
   // the user staring at links over the page they just asked for.
@@ -31,23 +34,22 @@ export default function Nav() {
       frame = 0
       setScrolled(window.scrollY > 8)
 
-      /* Is the pill currently floating over a dark section?
-         A light pill over dark content can only ever look like a grey bar —
-         there is nothing behind it to see through, and dark-on-grey is the
-         washed-out result. Over dark content the nav flips to dark glass with
-         light type, which is both far higher contrast and what actually reads
-         as glass. Measured live rather than hard-coded per route, so it stays
-         correct at any hero height and on any page. */
+      /* Is the pill currently floating over a dark section? A light pill over
+         dark content can only look like a grey bar — nothing behind it to see
+         through, and dark-on-grey is washed out. Over dark content the nav
+         flips to dark glass with light type. Measured live rather than
+         hard-coded per route, so it stays correct at any hero height. */
       const dark = document.querySelector('.hero--dark')
-      const navBottom = parseInt(
-        getComputedStyle(document.documentElement).getPropertyValue('--nav-h'),
-        10
-      ) || 76
+      const navBottom =
+        parseInt(
+          getComputedStyle(document.documentElement).getPropertyValue('--nav-h'),
+          10
+        ) || 76
       setOnDark(!!dark && dark.getBoundingClientRect().bottom > navBottom)
     }
 
-    // rAF-throttled: the scroll handler now reads layout, and doing that on
-    // every raw scroll event is what causes jank.
+    // rAF-throttled: this handler reads layout, and doing that on every raw
+    // scroll event is what causes jank.
     const onScroll = () => { if (!frame) frame = requestAnimationFrame(measure) }
 
     measure()
@@ -69,38 +71,38 @@ export default function Nav() {
   }, [open])
 
   const isCurrent = (href) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href)
+    href === home
+      ? pathname === home || pathname === home.replace(/\/$/, '')
+      : pathname.startsWith(href)
 
   return (
     <nav
       className="nav"
       data-scrolled={scrolled}
       data-theme={onDark ? 'dark' : 'light'}
-      aria-label="Primary"
+      aria-label={t.nav.primary}
     >
       <div className="container nav__inner">
         {/* Refraction layer. This is what separates real liquid glass from a
             blurred bar: the SVG filter below displaces the pixels BEHIND the
             pill, so the page bends through it like an actual lens.
 
-            It lives on its own element rather than in the pill's own
-            backdrop-filter on purpose — `backdrop-filter: blur() url(#id)` is
-            invalid as a whole in engines that do not support url() filters,
-            which would take the blur down with it. As a separate layer it
-            simply does nothing there, and the blurred pill underneath is
-            still correct. */}
+            It lives on its own element because `backdrop-filter: blur() url(#id)`
+            is invalid as a whole in engines without url() filter support, which
+            would take the blur down with it. As a separate layer it simply does
+            nothing there, and the blurred pill underneath is still correct. */}
         <span className="nav__refract" aria-hidden="true" />
 
-        <Link href="/" className="brand" aria-label="8Slabs — home">
+        <Link href={home} className="brand" aria-label={`${site.brand} — ${t.nav.homeAria}`}>
           <BrandMark className="brand__mark" />
-          <span className="brand__word">8Slabs</span>
+          <span className="brand__word">{site.brand}</span>
         </Link>
 
         <button
           className="nav__burger"
           aria-expanded={open}
           aria-controls="nav-links"
-          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-label={open ? t.nav.closeMenu : t.nav.openMenu}
           onClick={() => setOpen((v) => !v)}
         >
           <span /><span /><span />
@@ -117,13 +119,16 @@ export default function Nav() {
               {l.label}
             </Link>
           ))}
+
+          <LanguageSwitcher locale={locale} label={t.nav.language} />
+
           <a
             className="btn btn--primary nav__cta"
-            href={whatsappLink()}
+            href={whatsappLink(t.common.whatsappGreeting)}
             target="_blank"
             rel="noreferrer noopener"
           >
-            Enquire
+            {t.nav.enquire}
           </a>
         </div>
       </div>
@@ -135,14 +140,13 @@ export default function Nav() {
 
 /**
  * The lens. feTurbulence generates smooth fractal noise, which feDisplacementMap
- * then uses to push the backdrop's pixels around — that displacement is the
+ * uses to push the backdrop's pixels around — that displacement is the
  * refraction you see at the rim of thick glass.
  *
- * Tuned well below the values you normally see quoted for this trick: a
- * displacement scale of ~70 smears a navbar into illegibility, and a high
- * baseFrequency reads as noise rather than glass. 0.006 with scale 18 gives a
- * slow, liquid warp; the CSS masks it to the rim so the middle of the pill —
- * where the links are — stays optically clean.
+ * Tuned well below the values usually quoted for this trick: a displacement
+ * scale of ~70 smears a navbar into illegibility, and a high baseFrequency
+ * reads as noise rather than glass. The CSS masks it to the rim so the middle
+ * of the pill — where the links are — stays optically clean.
  */
 function GlassFilter() {
   return (

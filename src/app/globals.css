@@ -44,6 +44,11 @@
      luminance — the difference between a texture you squint at and one that
      reads as deliberate. */
   --c-accent-deep: #6B4F34;
+  /* Body copy set over a photograph. --c-body #555555 sits at 0.0985
+     luminance and becomes the binding constraint the moment a picture is
+     behind it; this is 0.0508, which roughly halves the background luminance
+     the hero has to hold. Same move as --c-accent-deep, one element down. */
+  --c-body-deep: #3F3F3F;
 
   /* ---- Dark surfaces -----------------------------------------------
      A flat neutral near-black next to a warm cream site reads cold and

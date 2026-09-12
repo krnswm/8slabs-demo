@@ -29,6 +29,7 @@ const HERO_PHOTO = {
   'texture-black-veined': { widths: [800, 1200], tone: 'dark' },
   'samples-linen':        { widths: [474],       tone: 'light' },   // 474px source — too soft for a full-bleed hero
   'texture-fantasy-brown':{ widths: [640, 960],  tone: 'light' },
+  'setts-stacked':        { widths: [474],       tone: 'dark' },   // 474px source
   'granite-outcrop':      { widths: [640, 1000], tone: 'light' },
 }
 

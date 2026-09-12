@@ -445,16 +445,22 @@ main:focus { outline: none; }
   position: absolute;
   inset: 0;
   background:
-    /* Shaped, not a straight ramp from black. The old 0.93-at-the-very-top
-       curve made the strip the nav floats on almost pure black — so the glass
-       had nothing behind it to refract and could only read as a grey bar. This
-       opens the top 10% so the photograph shows through the pill, then peaks
-       BELOW it to protect the title rail (which spans the full width and
-       crosses the bright side of the image), then releases. */
+    /* The old top band peaked at 0.86 black by 10% and was gone by 28% — dark
+       enough, and abrupt enough, to read as a stripe laid across the top of
+       the photograph rather than as light falling off. It is replaced by a
+       long, shallow ramp with its stops spread, which never gets dark enough
+       to see as a band.
+       It can be this gentle because the rail type is now full cream rather
+       than 76% cream: at 76% the rail needed roughly 55% black to clear 4.5:1,
+       at 100% it needs about 17%. Brightening the type was worth three times
+       more than darkening the picture. */
     linear-gradient(180deg,
-      rgba(0,0,0,0.30) 0%,
-      rgba(0,0,0,0.86) 10%,
-      rgba(0,0,0,0) 28%),
+      rgba(0,0,0,0.34) 0%,
+      rgba(0,0,0,0.40) 9%,
+      rgba(0,0,0,0.33) 17%,
+      rgba(0,0,0,0.19) 26%,
+      rgba(0,0,0,0.07) 35%,
+      rgba(0,0,0,0) 45%),
     linear-gradient(0deg,   rgba(0,0,0,0.88) 0%, rgba(0,0,0,0) 26%),
     linear-gradient(100deg,
       rgba(0,0,0,0.72) 0%,
@@ -622,11 +628,11 @@ main:focus { outline: none; }
       color-mix(in srgb, var(--c-bg) 24%, transparent) 26%,
       transparent 35%),
     linear-gradient(90deg,
-      color-mix(in srgb, var(--c-bg) 34%, transparent) 0%,
-      color-mix(in srgb, var(--c-bg) 86%, transparent) 26%,
-      color-mix(in srgb, var(--c-bg) 94%, transparent) 50%,
-      color-mix(in srgb, var(--c-bg) 86%, transparent) 74%,
-      color-mix(in srgb, var(--c-bg) 34%, transparent) 100%);
+      color-mix(in srgb, var(--c-bg) 22%, transparent) 0%,
+      color-mix(in srgb, var(--c-bg) 74%, transparent) 26%,
+      color-mix(in srgb, var(--c-bg) 86%, transparent) 50%,
+      color-mix(in srgb, var(--c-bg) 74%, transparent) 74%,
+      color-mix(in srgb, var(--c-bg) 22%, transparent) 100%);
 }
 
 /* Phones get a denser veil and a quieter photograph.
@@ -636,7 +642,7 @@ main:focus { outline: none; }
    assumed: scripts/check-phero-bg.mjs tests 390x844 alongside 1440x900 for
    exactly this reason, and the desktop numbers say nothing about it. */
 @media (max-width: 860px) {
-  .phero__bg img { opacity: 0.58 !important; }
+  .phero__bg img { opacity: 0.72 !important; }
   .phero__bg::after {
     background:
       /* These two MUST end in `transparent`. A gradient holds its final stop
@@ -662,15 +668,17 @@ main:focus { outline: none; }
          edges: the lead paragraph runs to within 20px of both margins here, so
          there is no spare width to hand back to the picture. */
       linear-gradient(90deg,
-        color-mix(in srgb, var(--c-bg) 71%, transparent) 0%,
-        color-mix(in srgb, var(--c-bg) 80%, transparent) 50%,
-        color-mix(in srgb, var(--c-bg) 71%, transparent) 100%);
+        color-mix(in srgb, var(--c-bg) 75%, transparent) 0%,
+        color-mix(in srgb, var(--c-bg) 84%, transparent) 50%,
+        color-mix(in srgb, var(--c-bg) 75%, transparent) 100%);
   }
 }
 
 /* Accent type on a photograph uses the deeper bronze. Scoped to [data-photo]
    so heroes without a picture keep the lighter accent they were tuned for. */
 .phero[data-photo] .eyebrow { color: var(--c-accent-deep); }
+.phero[data-photo] .lead { color: var(--c-body-deep); }
+.phero[data-photo] .phero__top .mono { color: var(--c-body-deep); }
 .phero[data-photo] .phero__cue { color: var(--c-accent-deep); }
 
 /* Per-photograph opacity. Swept against the real text boxes, not chosen by
@@ -678,15 +686,17 @@ main:focus { outline: none; }
    argument for exactly this. The darkest photograph gets the lowest number.
    At these values the binding element is the lead paragraph at roughly
    5.6-6.1:1, with the 4.5 floor still clear. */
-.phero[data-photo='texture-black-veined'] .phero__bg img { opacity: 0.62; }
+.phero[data-photo='texture-black-veined'] .phero__bg img { opacity: 0.80; }
 .phero[data-photo='samples-linen']        .phero__bg img { opacity: 0.70; }
-.phero[data-photo='texture-fantasy-brown'] .phero__bg img { opacity: 0.78; }
-.phero[data-photo='granite-outcrop']      .phero__bg img { opacity: 0.70; }
+.phero[data-photo='setts-stacked']        .phero__bg img { opacity: 0.80; }
+.phero[data-photo='texture-fantasy-brown'] .phero__bg img { opacity: 0.90; }
+.phero[data-photo='granite-outcrop']      .phero__bg img { opacity: 0.88; }
 
 /* Framing. Each photograph has a different subject in a different place, and
    `cover` on a full-viewport hero crops hard, so each gets its own anchor. */
 .phero[data-photo='texture-black-veined'] .phero__bg img { object-position: 60% 50%; }
 .phero[data-photo='samples-linen']        .phero__bg img { object-position: 72% 40%; }
+.phero[data-photo='setts-stacked']        .phero__bg img { object-position: 50% 45%; }
 .phero[data-photo='texture-fantasy-brown'] .phero__bg img { object-position: 65% 45%; }
 .phero[data-photo='granite-outcrop']      .phero__bg img { object-position: 55% 60%; }
 
@@ -1077,6 +1087,10 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
    dims where the light falls. */
 .hero--dark h1 { color: var(--c-bg); }
 .hero--dark .mono { color: color-mix(in srgb, var(--c-bg) 76%, transparent); }
+/* The full-width top rail crosses the bright side of the photograph, so it
+   gets the full cream. Muting it there costs far more scrim than the muting
+   is worth — see the ramp above. */
+.hero--dark .hero__top .mono { color: var(--c-bg); }
 .hero--dark .hero__sub { color: color-mix(in srgb, var(--c-bg) 84%, transparent); }
 /* 40%, not 20%: these rules ARE the structure of the hero — they draw the
    three bands — so they have to be seen, not merely present. At 20% they

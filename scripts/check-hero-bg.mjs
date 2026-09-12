@@ -61,7 +61,12 @@ const zone = (x0, x1, y0, y1) => {
 }
 
 const CREAM = lum(247, 245, 242)
-const RAIL = lum(200, 198, 195)
+/* The two rails no longer share a colour, so they cannot share a constant.
+   The top rail crosses the bright side of the photograph and is full cream;
+   the material rail at the bottom sits on the dark corner and keeps the muted
+   76% tone. Using one value for both flattered whichever was actually darker. */
+const RAIL_TOP = lum(247, 245, 242)          // .hero__top .mono — full cream
+const RAIL_BOTTOM = lum(200, 198, 195)       // .hero__materials — 76% cream
 
 // Zones as fractions of the viewport so the same checks work at any width.
 const fx = (f) => Math.round(f * info.width)
@@ -75,8 +80,8 @@ const [tx0, tx1] = narrow
     : [0.11, 0.49]
 const checks = [
   [`headline + copy (${dir} text column)`, CREAM, zone(fx(tx0), fx(tx1), fy(0.31), fy(0.74))],
-  ['top rail (full width)', RAIL, zone(fx(0.11), fx(0.89), fy(0.098), fy(0.125))],
-  ['material rail (full width)', RAIL, zone(fx(0.11), fx(0.89), fy(0.93), fy(0.97))],
+  ['top rail (full width, cream)', RAIL_TOP, zone(fx(0.11), fx(0.89), fy(0.098), fy(0.125))],
+  ['material rail (full width, muted)', RAIL_BOTTOM, zone(fx(0.11), fx(0.89), fy(0.93), fy(0.97))],
 ]
 
 console.log('HERO BACKGROUND ONLY — real pixels, text hidden\n')

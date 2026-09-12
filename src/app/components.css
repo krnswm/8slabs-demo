@@ -565,6 +565,61 @@ main:focus { outline: none; }
   background-image: var(--grain);
   border-bottom: 1px solid var(--c-border);
 }
+/* ---- Interior hero photograph -------------------------------------------
+   The photograph sits UNDER the cream, not over it. Interior heroes are light
+   by client instruction ("darker on the home and maybe lighter inside"), and
+   the type is near-black, so the picture has to read as a tint in the paper
+   rather than as an image the text is fighting.
+
+   Two layers do that: the picture at low opacity, then a cream veil graded so
+   it is densest exactly where the headline block sits and thinnest at the far
+   edge, where the stone is allowed to show. Opacity is tuned per photograph
+   because their luminances differ by a factor of five — one number for all
+   three would either bury the linen or let the black slab swallow the text. */
+.phero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.phero__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* The cream veil. `inset: 0` over the picture, inside the same layer, so the
+   two travel together and the veil can never be left behind by a stacking
+   context change. */
+.phero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    100deg,
+    var(--c-bg) 0%,
+    color-mix(in srgb, var(--c-bg) 88%, transparent) 46%,
+    color-mix(in srgb, var(--c-bg) 62%, transparent) 100%
+  );
+}
+/* Under RTL the headline moves to the right, so the dense end of the veil has
+   to move with it — a physical-direction gradient does not mirror itself. */
+[dir='rtl'] .phero__bg { transform: scaleX(-1); }
+
+/* Per-photograph opacity, measured rather than guessed. See the values quoted
+   in each rule: these are the real sampled luminances of the text zone. */
+.phero[data-photo='texture-black-veined'] .phero__bg img { opacity: 0.16; }
+.phero[data-photo='samples-linen']        .phero__bg img { opacity: 0.30; }
+.phero[data-photo='texture-fantasy-brown'] .phero__bg img { opacity: 0.28; }
+.phero[data-photo='granite-outcrop']      .phero__bg img { opacity: 0.26; }
+
+/* Framing. Each photograph has a different subject in a different place, and
+   `cover` on a full-viewport hero crops hard, so each gets its own anchor. */
+.phero[data-photo='texture-black-veined'] .phero__bg img { object-position: 60% 50%; }
+.phero[data-photo='samples-linen']        .phero__bg img { object-position: 72% 40%; }
+.phero[data-photo='texture-fantasy-brown'] .phero__bg img { object-position: 65% 45%; }
+.phero[data-photo='granite-outcrop']      .phero__bg img { object-position: 55% 60%; }
+
 /* Extra grain layer, hero-only, so the tooth is actually visible here (the
    base body grain is deliberately near-subliminal). Sits under the content. */
 .phero::before {
@@ -574,6 +629,7 @@ main:focus { outline: none; }
   background-image: var(--grain);
   opacity: 0.9;
   pointer-events: none;
+  z-index: 1;
 }
 /* Three fixed rows — top bar / flexible middle / spec footer — so the hero is
    a structured composition that fills exactly one screen. The middle row takes
@@ -583,7 +639,7 @@ main:focus { outline: none; }
    to reach. */
 .phero__inner {
   position: relative;
-  z-index: 1;
+  z-index: 2;                           /* above the photograph and the grain */
   flex: 1;
   min-height: 0;                        /* let the middle row shrink, never force overflow */
   display: grid;

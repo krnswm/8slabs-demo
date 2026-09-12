@@ -8,6 +8,7 @@ export default function Catalogue({ locale = 'en' }) {
   return (
     <div className="page-in">
       <PageHero
+        photo="texture-fantasy-brown"
         crumb={t.catalogue.crumb}
         meta={t.catalogue.metaLine}
         eyebrow={t.catalogue.eyebrow}

@@ -46,6 +46,7 @@ export default function Contact({ locale = 'en' }) {
   return (
     <div className="page-in">
       <PageHero
+        photo="granite-outcrop"
         crumb={t.contact.crumb}
         meta={t.contact.metaLine}
         eyebrow={t.contact.eyebrow}

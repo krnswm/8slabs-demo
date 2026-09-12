@@ -17,9 +17,40 @@
  * negative space around it is deliberate; the full-width context line and spec
  * footer frame that space so it feels composed, not empty.
  */
-export default function PageHero({ crumb, meta, eyebrow, title, lead, facts = [], scrollLabel = 'Scroll' }) {
+/**
+ * Background photographs, by page.
+ *
+ * `widths` lists only the sizes that actually exist in public/photos — the
+ * import script never upscales, so asking for a width a source cannot provide
+ * silently yields nothing. `tone` says whether the photograph is dark or light
+ * overall, which decides how the cream veil above it is mixed.
+ */
+const HERO_PHOTO = {
+  'texture-black-veined': { widths: [800, 1200], tone: 'dark' },
+  'samples-linen':        { widths: [474],       tone: 'light' },   // 474px source — too soft for a full-bleed hero
+  'texture-fantasy-brown':{ widths: [640, 960],  tone: 'light' },
+  'granite-outcrop':      { widths: [640, 1000], tone: 'light' },
+}
+
+export default function PageHero({ crumb, meta, eyebrow, title, lead, facts = [], scrollLabel = 'Scroll', photo }) {
+  const bg = photo ? HERO_PHOTO[photo] : null
+  const srcSet = (fmt) =>
+    bg.widths.map((w) => `/photos/${photo}-${w}.${fmt} ${w}w`).join(', ')
+
   return (
-    <header className="phero">
+    <header className="phero" data-photo={photo || undefined} data-tone={bg?.tone}>
+      {bg && (
+        /* Decorative only: the hero says everything in text, so the photograph
+           carries no information a screen reader needs. aria-hidden plus an
+           empty alt, not one or the other. */
+        <div className="phero__bg" aria-hidden="true">
+          <picture>
+            <source type="image/avif" sizes="100vw" srcSet={srcSet('avif')} />
+            <source type="image/webp" sizes="100vw" srcSet={srcSet('webp')} />
+            <img src={`/photos/${photo}-${bg.widths[bg.widths.length - 1]}.webp`} alt="" decoding="async" />
+          </picture>
+        </div>
+      )}
       <div className="container phero__inner">
         <div className="phero__top">
           <span className="mono">{crumb}</span>

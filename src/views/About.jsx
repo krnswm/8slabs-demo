@@ -12,6 +12,7 @@ export default function About({ locale = 'en' }) {
   return (
     <div className="page-in">
       <PageHero
+        photo="texture-black-veined"
         crumb={t.about.crumb}
         meta={fill(t.about.metaLine, { year: site.established })}
         eyebrow={t.about.eyebrow}

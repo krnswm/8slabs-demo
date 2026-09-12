@@ -1,9 +1,7 @@
 import Link from 'next/link'
 import { site, whatsappLink } from '../data/site.js'
-import { getStone } from '../data/stones.js'
 import { getDictionary, fill } from '../i18n/dictionaries.js'
 import { localePath } from '../i18n/config.js'
-import StoneSwatch from '../components/StoneSwatch.jsx'
 import PageHero from '../components/PageHero.jsx'
 import Reveal from '../components/Reveal.jsx'
 
@@ -47,13 +45,29 @@ export default function About({ locale = 'en' }) {
             </div>
           </Reveal>
 
-          <Reveal className="split__media" delay={80}>
-            <StoneSwatch
-              label={getStone('rainbow').name}
-              swatch={getStone('rainbow').swatch}
-              variant="split"
-            />
-            <span className="photo-flag">{t.common.placeholderTexture}</span>
+          <Reveal className="split__media split__media--photo" delay={80}>
+            {/* A real slab in the yard, dimensions chalked on the tag before
+                shipping. It replaces a procedural swatch here because this
+                section is about the operation, not about a product: no stone
+                is named, so the photo makes no claim the business cannot meet.
+                The named stones in the catalogue still carry their placeholder
+                textures, and must, until there are photographs of those
+                specific slabs. */}
+            <picture className="split__pic">
+              <source type="image/avif" sizes="(max-width: 860px) 92vw, 46vw"
+                srcSet="/photos/slab-tagged-yard-640.avif 640w, /photos/slab-tagged-yard-1000.avif 1000w, /photos/slab-tagged-yard-1600.avif 1600w" />
+              <source type="image/webp" sizes="(max-width: 860px) 92vw, 46vw"
+                srcSet="/photos/slab-tagged-yard-640.webp 640w, /photos/slab-tagged-yard-1000.webp 1000w, /photos/slab-tagged-yard-1600.webp 1600w" />
+              <img
+                className="split__photo"
+                src="/photos/slab-tagged-yard-1000.webp"
+                alt={t.about.slabPhotoAlt}
+                width="1615"
+                height="1011"
+                loading="lazy"
+                decoding="async"
+              />
+            </picture>
           </Reveal>
         </div>
       </section>

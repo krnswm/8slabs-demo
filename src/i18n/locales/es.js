@@ -79,6 +79,8 @@ export default {
     factModel: 'Modelo',
     factModelValue: 'Exportación B2B',
 
+    slabPhotoAlt: 'Una losa terminada en el patio, etiquetada con sus dimensiones antes del envio.',
+
     storyEyebrow: 'La versión breve',
     storyTitle: 'Diez años aprendiendo qué sale mal',
     storyP1: 'Pasé la última década en una de las principales empresas exportadoras de piedra natural de la India, trabajando en negocio internacional, relaciones con clientes y control de calidad. Ahí es donde uno aprende qué sale mal de verdad en un contenedor, y rara vez es la piedra en sí.',

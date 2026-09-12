@@ -702,6 +702,11 @@ main:focus { outline: none; }
 .split { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
 @media (max-width: 850px) { .split { grid-template-columns: 1fr; } }
 .split__media { aspect-ratio: 4 / 5; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--c-border); position: relative; }
+/* The 4/5 frame above was cut for the procedural swatch, which is square by
+   construction. A photograph is not: forcing a 1.6 landscape slab into a 0.8
+   portrait box throws away half its width — including the men holding it, who
+   are the only thing giving the slab scale. Photos get a landscape frame. */
+.split__media--photo { aspect-ratio: 3 / 2; }
 
 /* ============================================================ VALUES == */
 .value { padding-top: var(--s-6); border-top: 2px solid var(--c-heading); }
@@ -1236,4 +1241,16 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
     width: 7px; height: 7px; border-radius: 50%;
     background: var(--c-accent-ink);
   }
+}
+
+/* A real photograph in the story slot, where a procedural swatch used to sit.
+   The swatch was square by construction; a photograph is not, so the frame has
+   to crop rather than letterbox — otherwise the slab sits in dead bands that
+   read as a broken image. */
+.split__pic { display: block; width: 100%; height: 100%; }
+.split__photo {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }

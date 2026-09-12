@@ -79,6 +79,8 @@ export default {
     factModel: '业务模式',
     factModelValue: 'B2B 出口',
 
+    slabPhotoAlt: '堆场中的成品板材，发货前标注尺寸。',
+
     storyEyebrow: '简要介绍',
     storyTitle: '十年，学会问题出在哪里',
     storyP1: '过去十年，我任职于印度领先的天然石材出口企业之一，负责国际业务、客户关系与品质保证。正是在那里，你会明白一个货柜真正会出什么问题 —— 而问题很少出在石材本身。',

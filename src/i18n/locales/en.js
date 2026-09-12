@@ -85,6 +85,8 @@ export default {
     factModel: 'Model',
     factModelValue: 'B2B export',
 
+    slabPhotoAlt: 'A finished slab in the yard, tagged with its dimensions before shipping.',
+
     storyEyebrow: 'The short version',
     storyTitle: 'Ten Years Learning What Goes Wrong',
     storyP1: 'I spent the last decade with one of India’s leading natural stone export companies, working across international business, customer relationships, and quality assurance. That is where you learn what actually goes wrong with a container—and it is rarely the stone itself.',

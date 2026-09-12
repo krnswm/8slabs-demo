@@ -79,6 +79,8 @@ export default {
     factModel: 'Model',
     factModelValue: 'Eksport B2B',
 
+    slabPhotoAlt: 'Gotowa płyta na składzie, oznaczona wymiarami przed wysyłką.',
+
     storyEyebrow: 'W skrócie',
     storyTitle: 'Dziesięć lat nauki o tym, co idzie nie tak',
     storyP1: 'Ostatnią dekadę spędziłem w jednej z czołowych indyjskich firm eksportujących kamień naturalny, zajmując się handlem międzynarodowym, relacjami z klientami i kontrolą jakości. To tam uczy się, co naprawdę idzie nie tak z kontenerem — i rzadko jest to sam kamień.',

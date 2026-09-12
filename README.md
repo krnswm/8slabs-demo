@@ -179,6 +179,47 @@ site-wide.
 > which looks like a code fault and is not one. Stop dev first; if it has
 > already happened, delete `.next/` and restart.
 
+## Photography
+
+Client-supplied photographs live in `public/photos/`, generated from a source
+folder that is deliberately NOT in the repo. `node scripts/import-photos.mjs`
+is the record of what came from where and rebuilds the set.
+
+**Four supplied files were excluded.** Each carries a visible watermark or UI
+overlay and cannot appear on a commercial site:
+
+| File | Why |
+|---|---|
+| `1.jpg` | A "CHANGE PRODUCT" button burned in, from a product visualiser |
+| `image(4).png` | Shutterstock, stamped "AI-Generated Image" |
+| `image(6).png` | saliarwin.com |
+| `image.png` | iStock / xphotoz |
+
+**Nine of the remaining eighteen are under 800px wide** — eight of them exactly
+474px, which is Pinterest's thumbnail size. The import script flags these
+`THUMBNAIL ONLY`. They can fill a small card; they will go visibly soft used
+any larger, and none can serve a hero or a full-width band.
+
+**Rights are unverified for most of this set,** and the client has chosen to
+proceed on that basis. Recorded here so the position is explicit rather than
+implied: apart from the two phone photographs (`IMG_7047`, `IMG_0627`) and
+`fantasy brown.JPG`, these appear to be third-party marketing photography.
+Several of the kitchen images look like laminate-countertop marketing rather
+than natural stone. Before launch, the safe versions of each are either a
+licence or a replacement shot.
+
+**Where they are used, and where they are not.** No photograph is attached to a
+named stone. The catalogue names seventeen — Kandla Grey, Teakwood, Kota Blue,
+Black Galaxy and the rest — and none of the supplied images is a photograph of
+any of them. Labelling one with a SKU name would be a product claim the
+business cannot meet, which is precisely what goes wrong on a container order.
+So the named stones keep their procedural `StoneSwatch` placeholders, still
+flagged on screen, until there are photographs of those specific slabs.
+
+What the photographs do carry is the operation: `slab-tagged-yard` (a finished
+slab with its dimensions chalked on the tag) sits in the About story, where it
+illustrates how the business works and names nothing.
+
 ## Languages
 
 Eight locales. English is served from the root; the rest are path-prefixed:

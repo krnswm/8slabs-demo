@@ -79,6 +79,8 @@ export default {
     factModel: 'Mô hình',
     factModelValue: 'Xuất khẩu B2B',
 
+    slabPhotoAlt: 'Một tấm đá thành phẩm tại bãi, được ghi kích thước trước khi giao hàng.',
+
     storyEyebrow: 'Tóm tắt',
     storyTitle: 'Mười năm học xem điều gì thường sai',
     storyP1: 'Tôi đã dành mười năm qua tại một trong những công ty xuất khẩu đá tự nhiên hàng đầu Ấn Độ, phụ trách kinh doanh quốc tế, quan hệ khách hàng và đảm bảo chất lượng. Đó là nơi ta học được điều gì thực sự sai với một container — và hiếm khi đó là bản thân viên đá.',

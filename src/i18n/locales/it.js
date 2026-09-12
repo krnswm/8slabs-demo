@@ -79,6 +79,8 @@ export default {
     factModel: 'Modello',
     factModelValue: 'Esportazione B2B',
 
+    slabPhotoAlt: 'Una lastra finita nel piazzale, contrassegnata con le sue dimensioni prima della spedizione.',
+
     storyEyebrow: 'In breve',
     storyTitle: 'Dieci anni a imparare cosa va storto',
     storyP1: 'Ho trascorso l’ultimo decennio in una delle principali aziende indiane di esportazione di pietra naturale, occupandomi di business internazionale, rapporti con i clienti e controllo qualità. È lì che si impara cosa va davvero storto in un container, e raramente è la pietra.',

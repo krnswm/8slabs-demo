@@ -19,14 +19,13 @@ export const site = {
      host exactly. */
   url: 'https://8slabz.com',
 
-  /* TODO(client): PLACEHOLDER business email.
-     Client feedback: "Email we will make of business and not use the personal
-     one." The personal address (simantvijai@gmail.com) has been removed from
-     the site accordingly. Replace the line below with the real business
-     mailbox the moment it exists — it is not live yet, so mail sent here will
-     bounce. */
-  email: 'hello@8slabz.com',
-  emailIsPlaceholder: true,
+  /* Live mailbox, client-supplied. Brand-named rather than personal, per their
+     feedback ("Email we will make of business and not use the personal one");
+     simantvijai@gmail.com is not on the site anywhere. Worth moving to
+     simant@8slabz.com once the domain's mail is set up — a buyer comparing
+     suppliers reads a domain address as the more established one — but this
+     receives mail today, which the previous placeholder did not. */
+  email: '8slabz@gmail.com',
 
   phone: '+91 85279 44844',
   phoneRaw: '918527944844',

@@ -24,6 +24,24 @@ export default function Home({ locale = 'en' }) {
       <section className="hero hero--dark">
         <div className="hero__media" aria-hidden="true">
           <picture>
+            {/* Art direction, not just resolution. The desktop frame is 16:9
+                with the stone massed to one side; cropping that into a phone's
+                portrait viewport leaves a narrow smear where the composition
+                used to be. Phones get a 3:4 crop of the cluster itself, with
+                clean backdrop at the top where the headline sits. The
+                breakpoint matches the one the mobile scrim uses. */}
+            <source
+              media="(max-width: 860px)"
+              type="image/avif"
+              sizes="100vw"
+              srcSet="/hero-m-480.avif 480w, /hero-m-640.avif 640w, /hero-m-828.avif 828w"
+            />
+            <source
+              media="(max-width: 860px)"
+              type="image/webp"
+              sizes="100vw"
+              srcSet="/hero-m-480.webp 480w, /hero-m-640.webp 640w, /hero-m-828.webp 828w"
+            />
             <source
               type="image/avif"
               sizes="100vw"
@@ -38,7 +56,7 @@ export default function Home({ locale = 'en' }) {
               src="/hero-1536.webp"
               alt=""
               width="1536"
-              height="1024"
+              height="852"
               fetchPriority="high"
               decoding="async"
             />

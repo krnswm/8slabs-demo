@@ -17,8 +17,15 @@ const CHROME = [
 ].find((p) => fs.existsSync(p))
 const ORIGIN = process.argv[2] || 'http://localhost:3000'
 
+/* Landscape entries are not padding. The portrait tiers all stopped at 600px
+   of height, so a phone held sideways (320-430px TALL) fell through every one
+   of them and the heroes overflowed by up to 49px — invisible to a sweep that
+   only ever rotates the width. */
 const VIEWPORTS = [
   [320, 568, 'small phone'],
+  [568, 320, 'phone landscape'],
+  [640, 360, 'android landscape'],
+  [844, 390, 'iPhone landscape'],
   [375, 667, 'iPhone SE'],
   [390, 844, 'iPhone 14'],
   [430, 932, 'Pro Max'],
@@ -26,6 +33,7 @@ const VIEWPORTS = [
   [1024, 768, 'tablet landscape'],
   [1280, 720, 'small laptop'],
   [1920, 1080, 'desktop'],
+  [2560, 1440, 'ultrawide'],
 ]
 const PAGES = ['/', '/about/', '/catalogue/', '/contact/', '/ar/', '/ar/catalogue/']
 

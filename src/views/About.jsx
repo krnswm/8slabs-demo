@@ -23,7 +23,6 @@ export default function About({ locale = 'en' }) {
           [t.about.factBase, t.about.factBaseValue],
           [t.about.factModel, t.about.factModelValue],
         ]}
-        scrollLabel={t.common.scroll}
       />
 
       {/* ---------------------------------------------------------- STORY

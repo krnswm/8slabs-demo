@@ -29,7 +29,6 @@ export default {
     enquireWhatsapp: 'Enquire on WhatsApp',
     browseCatalogue: 'Browse the catalogue',
     viewCatalogue: 'View the full catalogue',
-    scroll: 'Scroll',
     readStory: 'Read the full story',
     placeholder: 'Placeholder',
     placeholderTexture: 'Placeholder texture',

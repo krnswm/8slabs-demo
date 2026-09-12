@@ -19,7 +19,6 @@ export default function Catalogue({ locale = 'en' }) {
           [t.catalogue.factMinimum, t.catalogue.factMinimumValue],
           [t.catalogue.factScope, t.catalogue.factScopeValue],
         ]}
-        scrollLabel={t.common.scroll}
       />
 
       <section className="section">

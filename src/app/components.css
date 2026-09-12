@@ -686,7 +686,6 @@ main:focus { outline: none; }
 .phero[data-photo] .eyebrow { color: var(--c-accent-deep); }
 .phero[data-photo] .lead { color: var(--c-body-deep); }
 .phero[data-photo] .phero__top .mono { color: var(--c-body-deep); }
-.phero[data-photo] .phero__cue { color: var(--c-accent-deep); }
 
 /* Per-photograph opacity. Swept against the real text boxes, not chosen by
    eye: scripts/check-phero-bg.mjs takes an opacity override as its second
@@ -792,22 +791,6 @@ main:focus { outline: none; }
   color: var(--c-heading);
 }
 
-.phero__cue {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-3);
-  font-family: var(--f-mono);
-  font-size: var(--t-xs);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--c-body);
-  white-space: nowrap;
-}
-.phero__cue::after {
-  content: '';
-  width: 56px; height: 1px;
-  background: linear-gradient(90deg, var(--c-accent), transparent);
-}
 
 @media (max-width: 700px) {
   .phero__lead { max-width: 100%; }
@@ -1176,8 +1159,6 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
    media layer flips image and scrim together, so the protected side always
    follows the text. */
 [dir='rtl'] .hero__media { transform: scaleX(-1); }
-[dir='rtl'] .phero__cue::after,
-[dir='rtl'] .hero__cue::after { transform: scaleX(-1); }
 
 /* The catalogue alternates sides down the page; under RTL the whole grid
    mirrors, so the flip flag has to mirror with it to keep the rhythm. */
@@ -1439,4 +1420,48 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
      perfectly well a point smaller. */
   .hero__materials a { letter-spacing: 0.05em; }
   .hero__materials ul { gap: var(--s-2) var(--s-3); }
+}
+
+/* ------------------------------------------------  PHONE, HELD SIDEWAYS  --
+   A landscape phone is 320-430px TALL. Every tier above stops at 600px, so
+   this case fell through them: the heroes overflowed by 10-49px at 568x320
+   and 640x360. It is not a rare orientation — people rotate to read.
+
+   Below 480px of height the full-viewport hero stops being a good idea, so
+   the type stops shrinking (it would be unreadable) and the spec rails give
+   up their padding instead. The one thing that must survive is the call to
+   action being reachable without hunting. */
+@media (max-height: 480px) {
+  .hero,
+  .phero {
+    padding-block: calc(var(--nav-h) + 0.25rem) 0.75rem;
+  }
+  .hero__inner,
+  .phero__inner { gap: var(--s-2); }
+  .hero__top,
+  .phero__top { padding-bottom: var(--s-1); }
+  .hero__materials,
+  .phero__foot { padding-top: var(--s-2); }
+  .hero h1 { line-height: 0.98; }
+  .phero h1 { margin-block: var(--s-1); line-height: 1.02; }
+  .hero__sub,
+  .phero__lead .lead { line-height: 1.38; }
+  /* Six material links on one 568px-wide line rather than two stacked. */
+  .hero__materials ul { gap: var(--s-1) var(--s-3); }
+}
+
+/* Below 380px of viewport height there is roughly 240px left once the nav is
+   clear, and a hero of headline + lead + two buttons + a spec rail does not
+   go into 240px at any type size worth reading. So stop pretending: release
+   the full-viewport constraint and let the hero be its own height.
+
+   It then runs a little past the fold and scrolls, which is the honest
+   outcome — the alternative is type shrunk to the point of uselessness in
+   order to satisfy a rule that was written for a phone held upright. */
+@media (max-height: 380px) {
+  .hero,
+  .phero {
+    min-height: 0;
+    padding-block: calc(var(--nav-h) + 0.5rem) 1.25rem;
+  }
 }

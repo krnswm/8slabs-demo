@@ -9,7 +9,7 @@
  *   │  lead paragraph                                         │   large, carrying
  *   │                                                         │   the whole hero
  *   │                                                         │
- *   ├ fact  fact  fact ───────────────────────────── Scroll ─ ┤   the spec bar
+ *   ├ fact  fact  fact ────────────────────────────────────── ┤   the spec bar
  *   └─────────────────────────────────────────────────────────┘
  *
  * No image panel and no filler index — the hero is carried by the real content
@@ -32,7 +32,7 @@ const HERO_PHOTO = {
   'granite-outcrop':      { widths: [640, 1000], tone: 'light' },
 }
 
-export default function PageHero({ crumb, meta, eyebrow, title, lead, facts = [], scrollLabel = 'Scroll', photo }) {
+export default function PageHero({ crumb, meta, eyebrow, title, lead, facts = [], photo }) {
   const bg = photo ? HERO_PHOTO[photo] : null
   const srcSet = (fmt) =>
     bg.widths.map((w) => `/photos/${photo}-${w}.${fmt} ${w}w`).join(', ')
@@ -74,7 +74,6 @@ export default function PageHero({ crumb, meta, eyebrow, title, lead, facts = []
               ))}
             </dl>
           )}
-          <span className="phero__cue" aria-hidden="true">{scrollLabel}</span>
         </div>
       </div>
     </header>

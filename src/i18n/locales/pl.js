@@ -23,7 +23,6 @@ export default {
     enquireWhatsapp: 'Zapytaj przez WhatsApp',
     browseCatalogue: 'Przeglądaj katalog',
     viewCatalogue: 'Zobacz pełny katalog',
-    scroll: 'Przewiń',
     readStory: 'Przeczytaj całą historię',
     placeholder: 'Materiał zastępczy',
     placeholderTexture: 'Tekstura zastępcza',

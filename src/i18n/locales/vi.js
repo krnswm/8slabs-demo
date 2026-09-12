@@ -23,7 +23,6 @@ export default {
     enquireWhatsapp: 'Hỏi giá qua WhatsApp',
     browseCatalogue: 'Xem danh mục',
     viewCatalogue: 'Xem toàn bộ danh mục',
-    scroll: 'Cuộn xuống',
     readStory: 'Đọc toàn bộ câu chuyện',
     placeholder: 'Ảnh tạm',
     placeholderTexture: 'Kết cấu tạm',

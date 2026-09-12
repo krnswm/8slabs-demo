@@ -57,7 +57,6 @@ export default function Contact({ locale = 'en' }) {
           [t.contact.factReply, t.contact.factReplyValue],
           [t.contact.factScope, t.contact.factScopeValue],
         ]}
-        scrollLabel={t.common.scroll}
       />
 
       <section className="section">

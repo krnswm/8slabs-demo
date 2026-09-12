@@ -23,7 +23,6 @@ export default {
     enquireWhatsapp: 'Запрос через WhatsApp',
     browseCatalogue: 'Смотреть каталог',
     viewCatalogue: 'Смотреть полный каталог',
-    scroll: 'Прокрутка',
     readStory: 'Читать полностью',
     placeholder: 'Заглушка',
     placeholderTexture: 'Текстура-заглушка',

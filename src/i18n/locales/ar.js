@@ -26,7 +26,6 @@ export default {
     enquireWhatsapp: 'استفسار عبر واتساب',
     browseCatalogue: 'تصفّح الكتالوج',
     viewCatalogue: 'عرض الكتالوج كاملاً',
-    scroll: 'مرّر للأسفل',
     readStory: 'اقرأ القصة كاملة',
     placeholder: 'صورة مؤقتة',
     placeholderTexture: 'ملمس مؤقت',

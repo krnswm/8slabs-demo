@@ -23,7 +23,6 @@ export default {
     enquireWhatsapp: '通过 WhatsApp 询价',
     browseCatalogue: '浏览产品目录',
     viewCatalogue: '查看完整目录',
-    scroll: '向下滚动',
     readStory: '阅读完整介绍',
     placeholder: '占位图',
     placeholderTexture: '占位纹理',

@@ -76,7 +76,19 @@ export default function StoneFamilies({ locale = 'en' }) {
             {/* Stone names and origins are NOT translated: they are
                 international trade names and place names, ordered by those
                 names in every market. */}
-            <Reveal className="fam__grid" delay={80}>
+            {/* A carousel on phones, a grid on desktop — one element, switched
+                in CSS. `tabIndex` because the children are <figure>, which
+                nothing can focus: without it a keyboard user cannot reach the
+                stones that start off-screen. On the home page the equivalent
+                cards are links, so the browser scrolls them into view on Tab
+                and no extra stop is needed there. */}
+            <Reveal
+              className="fam__grid carousel"
+              delay={80}
+              role="group"
+              tabIndex={0}
+              aria-labelledby={`fam-${slug}`}
+            >
               {stones.map((s) => (
                 <figure key={s.id} className="fam__stone" id={s.id}>
                   <span className="fam__stone-face">

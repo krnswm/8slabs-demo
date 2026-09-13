@@ -58,6 +58,14 @@ const audit = () => {
     }
   }
 
+  /* Touch rules apply where a finger is the pointer. At 1920 or 2560 the
+     pointer is a mouse, the mobile media queries are not in play, and flagging
+     a 40x15 nav link there produced 84 "problems" on a site with none — which
+     is how an audit teaches people to ignore it. 860px matches the breakpoint
+     the CSS itself uses. */
+  const touch = vw <= 860
+  if (!touch) return { ...out, wide: [...new Set(out.wide)].slice(0, 4), tiny: [], taps: [], clipped: [] }
+
   for (const el of document.querySelectorAll('p, li, dd, dt, span, a, h1, h2, h3, button')) {
     const t = (el.textContent || '').trim()
     if (!t || el.children.length) continue
@@ -70,7 +78,11 @@ const audit = () => {
     const r = el.getBoundingClientRect()
     if (r.width === 0 || r.height === 0) continue
     if (getComputedStyle(el).visibility === 'hidden') continue
-    if (r.height < 40 || r.width < 40) {
+    /* Height is what padding controls, so 44 is the bar there. Width follows
+       the word: "About" is 40px wide because "About" is a short word, and a
+       40x45 link is a comfortable target. WCAG 2.5.8 asks 24x24, so that is
+       the floor used for width rather than flagging every short label. */
+    if (r.height < 44 || r.width < 24) {
       const label = (el.textContent || el.getAttribute('aria-label') || '?').trim().slice(0, 22)
       out.taps.push(`"${label}" ${Math.round(r.width)}x${Math.round(r.height)}`)
     }

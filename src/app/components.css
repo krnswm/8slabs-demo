@@ -1465,3 +1465,49 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
     padding-block: calc(var(--nav-h) + 0.5rem) 1.25rem;
   }
 }
+
+/* ====================================================  PRODUCT CAROUSEL  ==
+   Stone faces are a grid on desktop and a swipeable row on phones. Same
+   markup, switched here — no JS, no library. A grid of six stones on a 390px
+   screen gives each one about 150px and stacks them into a column you scroll
+   past; a row you flick through shows the material at a size worth looking at,
+   which is the whole point of a stone catalogue.
+
+   Built on scroll-snap rather than a carousel script: native momentum, native
+   RTL, works before JS arrives, and costs nothing to the main thread. */
+@media (max-width: 860px) {
+  .carousel {
+    display: flex;
+    gap: var(--s-4);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    /* Bleed to the container's edges so cards run off-screen instead of
+       stopping short — that cut-off card is the only affordance telling anyone
+       there is more to the right. The negative margin exactly cancels
+       .container's padding, so the scroller is viewport-wide and never wider:
+       a bleed that overshoots would put a horizontal scrollbar on the page. */
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    scroll-padding-inline: var(--gutter);
+    padding-bottom: var(--s-3);
+  }
+  .carousel > * {
+    /* Wide enough to judge the stone, narrow enough that the next one peeks. */
+    flex: 0 0 min(62%, 240px);
+    scroll-snap-align: start;
+  }
+
+  /* A real scrollbar, styled down. Hiding it entirely is common and wrong:
+     on a phone the bar is the position indicator, and without it there is no
+     way to tell a two-card row from a six-card one. */
+  .carousel::-webkit-scrollbar { height: 3px; }
+  .carousel::-webkit-scrollbar-track { background: var(--c-hairline); border-radius: 2px; }
+  .carousel::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 2px; }
+  .carousel { scrollbar-width: thin; scrollbar-color: var(--c-border) var(--c-hairline); }
+
+  .carousel:focus-visible {
+    outline: 2px solid var(--c-accent-ink);
+    outline-offset: 4px;
+  }
+}

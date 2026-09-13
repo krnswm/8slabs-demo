@@ -164,10 +164,10 @@ export default function Home({ locale = 'en' }) {
         <div className="container">
           <div className="sec-head">
             <span className="eyebrow">{t.home.collectionEyebrow}</span>
-            <h2>{t.home.collectionTitle}</h2>
+            <h2 id="collection-title">{t.home.collectionTitle}</h2>
             <p>{t.home.collectionBody}</p>
           </div>
-          <div className="grid grid--4">
+          <div className="grid grid--4 carousel" role="group" aria-labelledby="collection-title">
             {rackStones.slice(0, 4).map((s, i) => (
               <Reveal key={s.id} delay={i * 70}>
                 <Link href={`${p('/catalogue/')}#${s.id}`} className="face-card">

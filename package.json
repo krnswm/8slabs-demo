@@ -5,7 +5,7 @@
   "description": "Marketing website for 8Slabz — Indian natural stone exporter.",
   "scripts": {
     "dev": "next dev",
-    "build": "node scripts/check-i18n.mjs && next build",
+    "build": "node scripts/check-i18n.mjs && node scripts/build-sitemap.mjs && next build",
     "preview": "serve out -l 4321",
     "i18n:check": "node scripts/check-i18n.mjs",
     "locale:check": "node scripts/check-locale-routing.mjs",
@@ -13,7 +13,8 @@
     "phero:check": "node scripts/check-phero-bg.mjs",
     "nav:check": "node scripts/check-nav.mjs",
     "contrast:check": "node scripts/check-contrast.mjs",
-    "responsive:check": "node scripts/check-responsive.mjs"
+    "responsive:check": "node scripts/check-responsive.mjs",
+    "sitemap": "node scripts/build-sitemap.mjs"
   },
   "dependencies": {
     "next": "^15.5.20",

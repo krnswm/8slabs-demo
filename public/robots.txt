@@ -1,0 +1,8 @@
+# 8Slabz — https://8slabz.com
+User-agent: *
+Allow: /
+
+# Next.js build output; nothing here is a page.
+Disallow: /_next/
+
+Sitemap: https://8slabz.com/sitemap.xml

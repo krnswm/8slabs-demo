@@ -334,18 +334,17 @@ names, the brand, phone and email.
 
 ## Before launch — required
 
-1. **Set the domain.** `site.url` in `src/data/site.js` is `https://8slabz.com`,
-   a placeholder (SRS §9: no domain registered). This builds the absolute URLs
-   for the OpenGraph tags — link previews break until it is real.
+1. **Hosting and DNS.** `site.url` is `https://8slabz.com`, which is
+   registered but does not resolve — nothing is deployed anywhere yet. The
+   build is a plain static export, so any host serves it. Until DNS points
+   somewhere, the sitemap, the hreflang set and every OpenGraph URL describe
+   an address that returns nothing.
 
-2. **Confirm rights to the hero photograph.** `public/hero-*.{avif,webp}` are
-   generated from a supplied `Bg.png`. **Its provenance and licence have not
-   been confirmed** — if it is stock or AI-generated it needs a commercial
-   licence before launch. It is used as *atmosphere* only, never captioned as
-   8Slabz' own material, which is the defensible use; do not reuse it as a
-   catalogue image. Source is 1536×1024, so it upscales on large retina
-   displays — a higher-resolution original would be better. Re-encode with
-   `node scripts/hero-image.mjs <file>`.
+2. **Rights to the supplied photography.** The `Bg.png` this once referred to
+   is gone — the hero is now generated from the client's own image. What
+   remains open is the 18 imported photographs in `public/photos/`: four
+   watermarked files were excluded, and of the rest only three are clearly the
+   client's. See "Photography" above.
 
 3. **Real slab photography.** Every stone face is a *generated CSS texture*
    (`StoneSwatch`), labelled "Placeholder — not a photograph" on screen. This

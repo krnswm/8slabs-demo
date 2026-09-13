@@ -1512,33 +1512,47 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
   }
 }
 
-/* The pause control. WCAG 2.2.2 requires a way to stop anything that moves by
-   itself for more than five seconds, and this is it — not decoration. It only
-   renders once the carousel is actually looping, so it never appears on
-   desktop, or when prefers-reduced-motion has stopped the motion anyway. */
+/* The pause control, reachable but not on display.
+   The client did not want it under the carousel, and WCAG 2.2.2 still requires
+   a way to stop anything that moves by itself past five seconds. So it is
+   positioned off-screen and returns the moment it takes keyboard focus — the
+   skip-link pattern. Sighted pointer users have two other mechanisms: the
+   motion pauses while the cursor is over it, and a swipe stops it for good.
+   `clip-path` + 1px box rather than display:none, which would remove it from
+   the tab order and defeat the point. */
 .carousel__toggle {
-  display: none;
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
-@media (max-width: 860px) {
-  .carousel__toggle {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--s-2);
-    margin-top: var(--s-3);
-    min-height: 44px;
-    padding-inline: var(--s-3);
-    border: 1px solid var(--c-hairline);
-    border-radius: 999px;
-    background: transparent;
-    color: var(--c-body);
-    font-family: var(--f-mono);
-    font-size: 0.6875rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: color var(--d-fast) var(--ease-out), border-color var(--d-fast) var(--ease-out);
-  }
-  .carousel__toggle:hover { color: var(--c-accent-ink); border-color: var(--c-border); }
-  .carousel__toggle:focus-visible { outline: 2px solid var(--c-accent-ink); outline-offset: 3px; }
-  .carousel__icon { display: inline-flex; color: var(--c-accent-ink); }
+.carousel__toggle:focus-visible {
+  position: static;
+  width: auto;
+  height: auto;
+  margin-top: var(--s-3);
+  padding-inline: var(--s-3);
+  overflow: visible;
+  clip-path: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: 44px;
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+  background: var(--c-bg);
+  color: var(--c-heading);
+  font-family: var(--f-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  outline: 2px solid var(--c-accent-ink);
+  outline-offset: 3px;
 }
+.carousel__icon { display: inline-flex; color: var(--c-accent-ink); }

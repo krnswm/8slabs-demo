@@ -73,9 +73,16 @@ export default function CarouselAutoplay({ targetId, pauseLabel, playLabel }) {
     el.style.scrollSnapType = 'none'
 
     /* ---- pause conditions ---------------------------------------------- */
+    let stopped = false
     const hold = () => { held.current = true }
     const release = () => { held.current = false }
-    const nudge = () => { untilRef.current = performance.now() + RESUME_AFTER }
+    /* A deliberate swipe ends it for the visit. This is the mechanism WCAG
+       2.2.2 asks for, now that the button is not on screen: anyone bothered by
+       the motion stops it by doing the obvious thing, and it stays stopped. */
+    const nudge = () => {
+      untilRef.current = performance.now() + RESUME_AFTER
+      stopped = true
+    }
 
     el.addEventListener('pointerenter', hold)
     el.addEventListener('pointerleave', release)
@@ -93,7 +100,6 @@ export default function CarouselAutoplay({ targetId, pauseLabel, playLabel }) {
     /* ---- the loop ------------------------------------------------------- */
     let raf = 0
     let last = performance.now()
-    let stopped = false
 
     /* scrollLeft is an integer in every engine, so `+= 0.36` each frame rounds
        straight back to zero and the carousel creeps at about 1px/s instead of

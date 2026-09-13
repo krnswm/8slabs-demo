@@ -22,7 +22,7 @@ export default function Footer({ locale = DEFAULT_LOCALE, t }) {
           </div>
 
           <div>
-            <h4>{t.footer.pages}</h4>
+            <h3>{t.footer.pages}</h3>
             <ul className="footer__list">
               <li><Link href={p('/')}>{t.nav.home}</Link></li>
               <li><Link href={p('/about/')}>{t.nav.about}</Link></li>
@@ -32,7 +32,7 @@ export default function Footer({ locale = DEFAULT_LOCALE, t }) {
           </div>
 
           <div>
-            <h4>{t.footer.materials}</h4>
+            <h3>{t.footer.materials}</h3>
             <ul className="footer__list footer__list--split">
               <li><Link href={`${cat}#sandstone`}>{t.families.Sandstone.name}</Link></li>
               <li><Link href={`${cat}#limestone`}>{t.families.Limestone.name}</Link></li>
@@ -44,7 +44,7 @@ export default function Footer({ locale = DEFAULT_LOCALE, t }) {
           </div>
 
           <div>
-            <h4>{t.footer.getInTouch}</h4>
+            <h3>{t.footer.getInTouch}</h3>
             <ul className="footer__list">
               <li>
                 <a href={whatsappLink(t.common.whatsappGreeting)} target="_blank" rel="noreferrer noopener">

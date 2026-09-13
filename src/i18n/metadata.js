@@ -59,6 +59,11 @@ export function buildMetadata(locale = DEFAULT_LOCALE, route = '/') {
          and WhatsApp's scraper drops the preview. See scripts/opengraph-image.source.jsx */
       images: [{ url: '/og.png', width: 1200, height: 630, alt: `${site.brand} — ${site.tagline}` }],
     },
+    /* Without this nothing references public/favicon.svg, so browsers fall
+       back to requesting /favicon.ico, get a 404 on every page load, and show
+       a blank tab icon. Lighthouse flags the 404; the missing icon is the
+       part that a buyer actually sees. */
+    icons: { icon: [{ url: '/favicon.svg', type: 'image/svg+xml' }] },
     twitter: { card: 'summary_large_image' },
     robots: { index: true, follow: true },
   }

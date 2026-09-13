@@ -931,7 +931,10 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
 }
 .footer .brand__word { color: var(--c-on-dark); }
 .footer p { font-size: var(--t-sm); }
-.footer h4 {
+/* h3, not h4: the footer follows an h2, and skipping a level breaks the
+   document outline a screen reader navigates by. The size is set here, so the
+   tag can be correct without changing how it looks. */
+.footer h3 {
   font-family: var(--f-mono); font-size: 0.625rem;
   letter-spacing: 0.1em; text-transform: uppercase;
   color: var(--c-border); margin-bottom: var(--s-4);

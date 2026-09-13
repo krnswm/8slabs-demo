@@ -1511,3 +1511,34 @@ a.contact-row__v:hover { color: var(--c-accent-ink); }
     outline-offset: 4px;
   }
 }
+
+/* The pause control. WCAG 2.2.2 requires a way to stop anything that moves by
+   itself for more than five seconds, and this is it — not decoration. It only
+   renders once the carousel is actually looping, so it never appears on
+   desktop, or when prefers-reduced-motion has stopped the motion anyway. */
+.carousel__toggle {
+  display: none;
+}
+@media (max-width: 860px) {
+  .carousel__toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-top: var(--s-3);
+    min-height: 44px;
+    padding-inline: var(--s-3);
+    border: 1px solid var(--c-hairline);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--c-body);
+    font-family: var(--f-mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: color var(--d-fast) var(--ease-out), border-color var(--d-fast) var(--ease-out);
+  }
+  .carousel__toggle:hover { color: var(--c-accent-ink); border-color: var(--c-border); }
+  .carousel__toggle:focus-visible { outline: 2px solid var(--c-accent-ink); outline-offset: 3px; }
+  .carousel__icon { display: inline-flex; color: var(--c-accent-ink); }
+}

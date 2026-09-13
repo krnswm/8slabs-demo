@@ -20,6 +20,8 @@ export default {
   },
 
   common: {
+    pauseMotion: 'Wstrzymaj',
+    playMotion: 'Odtwórz',
     enquireWhatsapp: 'Zapytaj przez WhatsApp',
     browseCatalogue: 'Przeglądaj katalog',
     viewCatalogue: 'Zobacz pełny katalog',

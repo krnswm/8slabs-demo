@@ -20,6 +20,8 @@ export default {
   },
 
   common: {
+    pauseMotion: 'Tạm dừng',
+    playMotion: 'Phát',
     enquireWhatsapp: 'Hỏi giá qua WhatsApp',
     browseCatalogue: 'Xem danh mục',
     viewCatalogue: 'Xem toàn bộ danh mục',

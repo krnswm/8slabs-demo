@@ -20,6 +20,8 @@ export default {
   },
 
   common: {
+    pauseMotion: '暂停',
+    playMotion: '播放',
     enquireWhatsapp: '通过 WhatsApp 询价',
     browseCatalogue: '浏览产品目录',
     viewCatalogue: '查看完整目录',

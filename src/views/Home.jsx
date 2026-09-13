@@ -5,6 +5,7 @@ import { getDictionary } from '../i18n/dictionaries.js'
 import { localePath } from '../i18n/config.js'
 import StoneSwatch from '../components/StoneSwatch.jsx'
 import Reveal from '../components/Reveal.jsx'
+import CarouselAutoplay from '../components/CarouselAutoplay.jsx'
 
 /**
  * The home page body, shared by the English route (/) and every prefixed
@@ -167,7 +168,7 @@ export default function Home({ locale = 'en' }) {
             <h2 id="collection-title">{t.home.collectionTitle}</h2>
             <p>{t.home.collectionBody}</p>
           </div>
-          <div className="grid grid--4 carousel" role="group" aria-labelledby="collection-title">
+          <div className="grid grid--4 carousel" id="rail-collection" role="group" aria-labelledby="collection-title">
             {rackStones.slice(0, 4).map((s, i) => (
               <Reveal key={s.id} delay={i * 70}>
                 <Link href={`${p('/catalogue/')}#${s.id}`} className="face-card">
@@ -185,6 +186,11 @@ export default function Home({ locale = 'en' }) {
               </Reveal>
             ))}
           </div>
+          <CarouselAutoplay
+            targetId="rail-collection"
+            pauseLabel={t.common.pauseMotion}
+            playLabel={t.common.playMotion}
+          />
           <Reveal style={{ marginTop: 'var(--s-16)' }}>
             <Link className="btn btn--primary" href={p('/catalogue/')}>
               {t.common.viewCatalogue}

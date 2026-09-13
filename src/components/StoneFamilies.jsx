@@ -2,6 +2,7 @@ import { families, stonesIn } from '../data/stones.js'
 import { whatsappLink } from '../data/site.js'
 import { getDictionary, fill } from '../i18n/dictionaries.js'
 import StoneSwatch from './StoneSwatch.jsx'
+import CarouselAutoplay from './CarouselAutoplay.jsx'
 import Reveal from './Reveal.jsx'
 
 /**
@@ -85,6 +86,7 @@ export default function StoneFamilies({ locale = 'en' }) {
             <Reveal
               className="fam__grid carousel"
               delay={80}
+              id={`rail-${slug}`}
               role="group"
               tabIndex={0}
               aria-labelledby={`fam-${slug}`}
@@ -102,6 +104,11 @@ export default function StoneFamilies({ locale = 'en' }) {
                 </figure>
               ))}
             </Reveal>
+            <CarouselAutoplay
+              targetId={`rail-${slug}`}
+              pauseLabel={t.common.pauseMotion}
+              playLabel={t.common.playMotion}
+            />
           </section>
         )
       })}

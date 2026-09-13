@@ -26,6 +26,8 @@ export default {
   },
 
   common: {
+    pauseMotion: 'Pause',
+    playMotion: 'Play',
     enquireWhatsapp: 'Enquire on WhatsApp',
     browseCatalogue: 'Browse the catalogue',
     viewCatalogue: 'View the full catalogue',

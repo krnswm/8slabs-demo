@@ -23,6 +23,8 @@ export default {
   },
 
   common: {
+    pauseMotion: 'إيقاف مؤقت',
+    playMotion: 'تشغيل',
     enquireWhatsapp: 'استفسار عبر واتساب',
     browseCatalogue: 'تصفّح الكتالوج',
     viewCatalogue: 'عرض الكتالوج كاملاً',

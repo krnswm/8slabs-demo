@@ -4,84 +4,68 @@ import { useEffect, useRef, useState } from 'react'
 
 /**
  * Drives an existing `.carousel` scroller: slow continuous auto-scroll that
- * loops forever, and gets out of the way the instant anyone touches it.
+ * runs forever, and gets out of the way the instant anyone touches it.
  *
  * It attaches to an element already in the page rather than wrapping one,
  * because `.fam__grid` carries the alternating `order` that flips the
- * catalogue layout every other family. Wrapping it in another div would move
- * that ordering onto the wrapper and break the rhythm down the page.
+ * catalogue layout every other family. Wrapping it would move that ordering
+ * onto the wrapper and break the rhythm down the page.
  *
- * The loop is made by cloning the items ONCE, in the DOM, after mount. Cloning
- * in JSX instead would put every stone in the static HTML twice — duplicate
- * `id`s, which is invalid, and which would also break the `#kandla-grey`
- * anchors the footer links to. The clone is a client-side decoration: it is
- * aria-hidden, its focusables are pulled out of the tab order, and search
- * engines never see it.
+ * NOTHING IS DUPLICATED. The usual way to loop a carousel endlessly is to
+ * clone the items and rewind by exactly one set, which makes the seam
+ * invisible — but every stone then exists twice in the DOM, and anything that
+ * is not the phone carousel shows the catalogue saying "Kandla Grey" twice.
+ * On a catalogue of real materials that reads as a mistake, and the confusion
+ * costs more than the seamlessness is worth.
+ *
+ * So it travels instead: out to the end, back to the start, out again. The
+ * motion is continuous, it never jumps, and every stone appears exactly once
+ * in every view.
  *
  * Auto-motion is a real accessibility hazard, so it stops for all of:
  *   · prefers-reduced-motion — never starts at all
  *   · pointer over it, or focus inside it
- *   · any manual scroll, for a few seconds afterwards
+ *   · any deliberate scroll — permanently, for the rest of the visit
  *   · the carousel being off-screen, or the tab being in the background
- *   · the explicit Pause button, which WCAG 2.2.2 requires for anything that
- *     moves by itself for more than five seconds
+ *   · the Pause control, which WCAG 2.2.2 requires for anything that moves by
+ *     itself beyond five seconds. It sits off-screen until it takes keyboard
+ *     focus, so the control exists without being on display.
  */
 
 /** Pixels per second. Slow on purpose: this is a material you look at. */
 const SPEED = 22
-/** How long to leave it alone after someone scrolls it themselves. */
-const RESUME_AFTER = 3500
+/** Above this the carousel is a grid and autoplay is meaningless. */
+const CAROUSEL_MAX_WIDTH = 860
 
 export default function CarouselAutoplay({ targetId, pauseLabel, playLabel }) {
-  const [paused, setPaused] = useState(false)   // the button's state only
+  const [paused, setPaused] = useState(false)
   const [ready, setReady] = useState(false)
-  const held = useRef(false)                    // transient: hover, focus, touch
-  const untilRef = useRef(0)                    // ignore auto-scroll until this time
+  const held = useRef(false)
 
   useEffect(() => {
     const el = document.getElementById(targetId)
     if (!el) return
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const narrow = window.matchMedia(`(max-width: ${CAROUSEL_MAX_WIDTH}px)`)
     if (reduced.matches) return
 
-    // Only loop where the carousel actually scrolls. Above 860px it is a grid,
-    // and cloning there would silently double a static list.
-    const wide = window.matchMedia('(min-width: 861px)')
-    if (wide.matches) return
-
-    /* ---- the clone that makes it endless ------------------------------- */
-    const originals = [...el.children]
-    const clones = originals.map((node) => {
-      const c = node.cloneNode(true)
-      c.setAttribute('aria-hidden', 'true')
-      c.dataset.clone = 'true'
-      c.removeAttribute('id')
-      c.querySelectorAll('[id]').forEach((n) => n.removeAttribute('id'))
-      c.querySelectorAll('a, button, input, [tabindex]').forEach((n) => {
-        n.setAttribute('tabindex', '-1')
-      })
-      return c
-    })
-    clones.forEach((c) => el.appendChild(c))
     setReady(true)
 
-    const rtl = getComputedStyle(el).direction === 'rtl'
-    const sign = rtl ? -1 : 1
-    // Snap fights a continuous scroll — it tugs back on every frame.
     const snapWas = el.style.scrollSnapType
-    el.style.scrollSnapType = 'none'
+    let stopped = false               // permanent: the reader took over
+    let heading = 1                   // +1 outbound, -1 back
 
-    /* ---- pause conditions ---------------------------------------------- */
-    let stopped = false
     const hold = () => { held.current = true }
     const release = () => { held.current = false }
-    /* A deliberate swipe ends it for the visit. This is the mechanism WCAG
-       2.2.2 asks for, now that the button is not on screen: anyone bothered by
-       the motion stops it by doing the obvious thing, and it stays stopped. */
-    const nudge = () => {
-      untilRef.current = performance.now() + RESUME_AFTER
+
+    /* A deliberate scroll ends it for the visit. With the Pause control off
+       screen this is the mechanism WCAG 2.2.2 asks for: anyone bothered by the
+       motion stops it by doing the obvious thing, and it stays stopped. Snap
+       returns at the same moment, so their own swipes settle on a card. */
+    const surrender = () => {
       stopped = true
+      el.style.scrollSnapType = snapWas
     }
 
     el.addEventListener('pointerenter', hold)
@@ -90,44 +74,44 @@ export default function CarouselAutoplay({ targetId, pauseLabel, playLabel }) {
     window.addEventListener('pointerup', release)
     el.addEventListener('focusin', hold)
     el.addEventListener('focusout', release)
-    el.addEventListener('wheel', nudge, { passive: true })
-    el.addEventListener('touchmove', nudge, { passive: true })
+    el.addEventListener('wheel', surrender, { passive: true })
+    el.addEventListener('touchmove', surrender, { passive: true })
 
     let visible = true
     const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting }, { threshold: 0.15 })
     io.observe(el)
 
-    /* ---- the loop ------------------------------------------------------- */
+    /* scrollLeft is an integer in every engine, so `+= 0.36` per frame rounds
+       straight back to zero and the carousel creeps at about 1px/s instead of
+       22. Position is kept as a float and written across each frame; `applied`
+       is what we last wrote, so a difference means the reader moved it. */
+    let pos = el.scrollLeft
+    let applied = pos
     let raf = 0
     let last = performance.now()
 
-    /* scrollLeft is an integer in every engine, so `+= 0.36` each frame rounds
-       straight back to zero and the carousel creeps at about 1px/s instead of
-       22. The position is kept as a float here and written across each frame;
-       `applied` is what we last wrote, so a difference from it means the
-       reader scrolled and we resync rather than yanking them back. */
-    let pos = el.scrollLeft
-    let applied = pos
-
     const step = (now) => {
-      const dt = Math.min(now - last, 50) / 1000    // clamp: tab wake-ups jump
+      const dt = Math.min(now - last, 50) / 1000
       last = now
 
-      if (Math.abs(el.scrollLeft - applied) > 1.5) pos = el.scrollLeft   // they moved it
+      const active = narrow.matches && !stopped
+      if (active) el.style.scrollSnapType = 'none'
 
-      const running =
-        !stopped && visible && !document.hidden && !held.current && now >= untilRef.current
+      if (Math.abs(el.scrollLeft - applied) > 1.5) pos = el.scrollLeft
 
-      if (running) {
-        pos += sign * SPEED * dt
-        // Half the track is the clone, so rewinding by half lands on the
-        // identical frame — the seam is invisible.
-        const half = el.scrollWidth / 2
-        if (rtl) {
-          if (pos <= -half) pos += half
-        } else if (pos >= half) {
-          pos -= half
-        }
+      if (active && visible && !document.hidden && !held.current) {
+        // In RTL scrollLeft runs from 0 down to -span, so the limits mirror
+        // rather than the logic being written twice.
+        const span = el.scrollWidth - el.clientWidth
+        const rtl = getComputedStyle(el).direction === 'rtl'
+        const lo = rtl ? -span : 0
+        const hi = rtl ? 0 : span
+
+        pos += heading * (rtl ? -1 : 1) * SPEED * dt
+
+        if (pos >= hi) { pos = hi; heading = rtl ? 1 : -1 }
+        else if (pos <= lo) { pos = lo; heading = rtl ? -1 : 1 }
+
         el.scrollLeft = pos
         applied = el.scrollLeft
       }
@@ -135,29 +119,46 @@ export default function CarouselAutoplay({ targetId, pauseLabel, playLabel }) {
     }
     raf = requestAnimationFrame(step)
 
-    const onReduced = (e) => { if (e.matches) stopped = true }
+    const onReduced = (e) => {
+      if (e.matches) { stopped = true; el.style.scrollSnapType = snapWas }
+    }
     reduced.addEventListener('change', onReduced)
 
-    // Exposed so the button can flip it without re-running this effect.
+    /* Crossing into grid layout restores snap and parks the scroller at the
+       start — a grid inheriting a scrollLeft from the carousel it used to be
+       would sit mysteriously offset. The frame loop reads `narrow.matches`
+       live, so the travel stops on its own. */
+    const onWidth = (e) => {
+      if (!e.matches) {
+        el.style.scrollSnapType = snapWas
+        el.scrollLeft = 0
+        pos = 0
+        applied = 0
+        heading = 1
+      }
+    }
+    narrow.addEventListener('change', onWidth)
+
     el._setAuto = (on) => {
       stopped = !on
       if (on) { last = performance.now(); pos = el.scrollLeft; applied = pos }
+      else el.style.scrollSnapType = snapWas
     }
 
     return () => {
       cancelAnimationFrame(raf)
       io.disconnect()
       reduced.removeEventListener('change', onReduced)
+      narrow.removeEventListener('change', onWidth)
       el.removeEventListener('pointerenter', hold)
       el.removeEventListener('pointerleave', release)
       el.removeEventListener('pointerdown', hold)
       window.removeEventListener('pointerup', release)
       el.removeEventListener('focusin', hold)
       el.removeEventListener('focusout', release)
-      el.removeEventListener('wheel', nudge)
-      el.removeEventListener('touchmove', nudge)
+      el.removeEventListener('wheel', surrender)
+      el.removeEventListener('touchmove', surrender)
       el.style.scrollSnapType = snapWas
-      el.querySelectorAll('[data-clone="true"]').forEach((n) => n.remove())
       delete el._setAuto
     }
   }, [targetId])

@@ -20,8 +20,6 @@ export default {
   },
 
   common: {
-    pauseMotion: 'Pausa',
-    playMotion: 'Riproduci',
     enquireWhatsapp: 'Richiedi su WhatsApp',
     browseCatalogue: 'Sfoglia il catalogo',
     viewCatalogue: 'Vedi il catalogo completo',
@@ -168,7 +166,6 @@ export default {
     whatsapp: 'WhatsApp {phone}',
     call: 'Chiama {phone}',
     rights: 'Pietra naturale indiana · Esportata in tutto il mondo',
-    slateMarble: 'Ardesia e marmo',
   },
 
   notFound: {

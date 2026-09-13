@@ -23,8 +23,6 @@ export default {
   },
 
   common: {
-    pauseMotion: 'إيقاف مؤقت',
-    playMotion: 'تشغيل',
     enquireWhatsapp: 'استفسار عبر واتساب',
     browseCatalogue: 'تصفّح الكتالوج',
     viewCatalogue: 'عرض الكتالوج كاملاً',
@@ -171,7 +169,6 @@ export default {
     whatsapp: 'واتساب {phone}',
     call: 'اتصل {phone}',
     rights: 'حجر طبيعي هندي · يُصدَّر إلى العالم',
-    slateMarble: 'الأردواز والرخام',
   },
 
   notFound: {

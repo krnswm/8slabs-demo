@@ -14,7 +14,7 @@ export default function Footer({ locale = DEFAULT_LOCALE, t }) {
       <div className="container">
         <div className="footer__grid">
           <div>
-            <Link href={p('/')} className="brand" aria-label={`${site.brand} â ${t.nav.homeAria}`}>
+            <Link href={p('/')} className="brand" aria-label={`${site.brand} — ${t.nav.homeAria}`}>
               <BrandMark className="brand__mark" />
               <span className="brand__word">{site.brand}</span>
             </Link>
@@ -24,6 +24,7 @@ export default function Footer({ locale = DEFAULT_LOCALE, t }) {
           <div>
             <h4>{t.footer.pages}</h4>
             <ul className="footer__list">
+              <li><Link href={p('/')}>{t.nav.home}</Link></li>
               <li><Link href={p('/about/')}>{t.nav.about}</Link></li>
               <li><Link href={cat}>{t.nav.catalogue}</Link></li>
               <li><Link href={p('/contact/')}>{t.nav.contact}</Link></li>
@@ -32,12 +33,13 @@ export default function Footer({ locale = DEFAULT_LOCALE, t }) {
 
           <div>
             <h4>{t.footer.materials}</h4>
-            <ul className="footer__list">
+            <ul className="footer__list footer__list--split">
               <li><Link href={`${cat}#sandstone`}>{t.families.Sandstone.name}</Link></li>
               <li><Link href={`${cat}#limestone`}>{t.families.Limestone.name}</Link></li>
               <li><Link href={`${cat}#quartzite`}>{t.families.Quartzite.name}</Link></li>
               <li><Link href={`${cat}#granite`}>{t.families.Granite.name}</Link></li>
-              <li><Link href={`${cat}#slate`}>{t.footer.slateMarble}</Link></li>
+              <li><Link href={`${cat}#marble`}>{t.families.Marble.name}</Link></li>
+              <li><Link href={`${cat}#slate`}>{t.families.Slate.name}</Link></li>
             </ul>
           </div>
 
@@ -58,8 +60,8 @@ export default function Footer({ locale = DEFAULT_LOCALE, t }) {
         </div>
 
         <div className="footer__bottom">
-          <span>Â© {year} {site.brand} Â· {site.legalName}</span>
-          <span>{t.footer.rights}</span>
+          <span className="footer__legal">© {year} {site.brand} · {site.legalName}</span>
+          <span className="footer__tagline">{t.footer.rights}</span>
         </div>
       </div>
     </footer>

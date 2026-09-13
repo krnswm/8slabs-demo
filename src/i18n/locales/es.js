@@ -20,8 +20,6 @@ export default {
   },
 
   common: {
-    pauseMotion: 'Pausar',
-    playMotion: 'Reproducir',
     enquireWhatsapp: 'Consultar por WhatsApp',
     browseCatalogue: 'Ver el catálogo',
     viewCatalogue: 'Ver el catálogo completo',
@@ -168,7 +166,6 @@ export default {
     whatsapp: 'WhatsApp {phone}',
     call: 'Llamar {phone}',
     rights: 'Piedra natural india · Exportada a todo el mundo',
-    slateMarble: 'Pizarra y mármol',
   },
 
   notFound: {

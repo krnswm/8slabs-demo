@@ -20,8 +20,6 @@ export default {
   },
 
   common: {
-    pauseMotion: 'Wstrzymaj',
-    playMotion: 'Odtwórz',
     enquireWhatsapp: 'Zapytaj przez WhatsApp',
     browseCatalogue: 'Przeglądaj katalog',
     viewCatalogue: 'Zobacz pełny katalog',
@@ -168,7 +166,6 @@ export default {
     whatsapp: 'WhatsApp {phone}',
     call: 'Zadzwoń {phone}',
     rights: 'Indyjski kamień naturalny · Eksport na cały świat',
-    slateMarble: 'Łupek i marmur',
   },
 
   notFound: {

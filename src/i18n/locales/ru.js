@@ -20,8 +20,6 @@ export default {
   },
 
   common: {
-    pauseMotion: 'Пауза',
-    playMotion: 'Воспроизвести',
     enquireWhatsapp: 'Запрос через WhatsApp',
     browseCatalogue: 'Смотреть каталог',
     viewCatalogue: 'Смотреть полный каталог',
@@ -168,7 +166,6 @@ export default {
     whatsapp: 'WhatsApp {phone}',
     call: 'Позвонить {phone}',
     rights: 'Индийский натуральный камень · Экспорт по всему миру',
-    slateMarble: 'Сланец и мрамор',
   },
 
   notFound: {

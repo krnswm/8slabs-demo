@@ -20,8 +20,6 @@ export default {
   },
 
   common: {
-    pauseMotion: 'Tạm dừng',
-    playMotion: 'Phát',
     enquireWhatsapp: 'Hỏi giá qua WhatsApp',
     browseCatalogue: 'Xem danh mục',
     viewCatalogue: 'Xem toàn bộ danh mục',
@@ -168,7 +166,6 @@ export default {
     whatsapp: 'WhatsApp {phone}',
     call: 'Gọi {phone}',
     rights: 'Đá tự nhiên Ấn Độ · Xuất khẩu toàn cầu',
-    slateMarble: 'Đá phiến & cẩm thạch',
   },
 
   notFound: {

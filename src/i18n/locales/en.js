@@ -26,8 +26,6 @@ export default {
   },
 
   common: {
-    pauseMotion: 'Pause',
-    playMotion: 'Play',
     enquireWhatsapp: 'Enquire on WhatsApp',
     browseCatalogue: 'Browse the catalogue',
     viewCatalogue: 'View the full catalogue',
@@ -174,7 +172,6 @@ export default {
     whatsapp: 'WhatsApp {phone}',
     call: 'Call {phone}',
     rights: 'Indian natural stone · Exported worldwide',
-    slateMarble: 'Slate & marble',
   },
 
   notFound: {

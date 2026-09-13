@@ -1,6 +1,7 @@
 import { getDictionary } from '../i18n/dictionaries.js'
 import { getLocale, DEFAULT_LOCALE } from '../i18n/config.js'
 import { preferenceScript } from '../i18n/preference.js'
+import { organizationSchema } from '../data/schema.js'
 import Nav from './Nav.jsx'
 import Footer from './Footer.jsx'
 import WhatsAppFloat from './WhatsAppFloat.jsx'
@@ -25,6 +26,14 @@ export default function SiteShell({ locale = DEFAULT_LOCALE, fontClass = '', chi
         {/* Routes a visitor to their own language before first paint. Inline
             and synchronous on purpose: see src/i18n/preference.js. */}
         <script dangerouslySetInnerHTML={{ __html: preferenceScript() }} />
+        {/* Structured data. JSON.stringify, not a template literal: a stray
+            quote or newline in translated copy would otherwise break the JSON
+            silently, and a malformed block is simply ignored by crawlers —
+            you would never know it had stopped working. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema(locale)) }}
+        />
         {/* Scroll reveals hide their content in CSS and are released by JS.
             If JS never runs, nothing would ever be readable — so force every
             revealed element visible when scripting is off. */}
